@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | EventNest</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user/user_style.css', v='1.3') }}">
+</head>
+<body>
+
+   <!-- Header -->
+   <header class="navbar">
+        <div class="logo">
+          make
+          <img
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
+            alt=""
+            class="image"
+          />
+          event
+        </div>
+
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Search events or Services..." />
+        </div>
+
+        <nav>
+          <a href="{{ url_for('user_home') }}" class="option">Home</a>
+          <a href="{{ url_for('user_services') }}" class="option">Services</a>
+          <a href="{{ url_for('user_gallery') }}" class="option">Gallery</a>          
+          <a href="{{ url_for('user_about') }}" class="option">About</a>
+          <a href="{{ url_for('user_messages') }}" class="option">Messages</a>
+        </nav>
+
+        <div class="icon-btn" onclick="openWishlistModal()">
+      ❤️
+      <span>Wishlist <span id="wishlist-count" style="display:none;"></span></span>
+    </div>
+    
+    <!-- Notification Bell -->
+    <div class="icon-btn" onclick="toggleNotificationDropdown(event)" style="position: relative; margin-right: 15px; cursor: pointer; user-select: none;">
+        🔔 <span style="font-weight: 500;">Notifications <span id="notification-badge" style="display: none; background: #ef4444; color: white; border-radius: 50%; padding: 1px 6px; font-size: 10px; font-weight: bold; margin-left: 2px;"></span></span>
+        
+        <!-- Notification Dropdown -->
+        <div id="notificationDropdown" class="user-dropdown" style="display: none; width: 320px; padding: 10px 0; right: 0; top: 40px; text-align: left; max-height: 400px; overflow: hidden; flex-direction: column;">
+            <div style="padding: 5px 15px 10px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 14px; color: #1e293b;">Recent Alerts</span>
+                <span onclick="markNotificationsAsRead(event)" style="font-size: 12px; color: #2196f3; cursor: pointer; font-weight: normal;">Mark all read</span>
+            </div>
+            <div id="notificationDropdownList" style="max-height: 280px; overflow-y: auto; padding: 5px 0;">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+    
+  <!-- User Menu -->
+  <div class="user-menu">
+    <div class="user-btn" onclick="toggleUserMenu()">
+      <img src="{{ user.profile_image or url_for('static', filename='images/default_avatar.svg') }}" alt="User Avatar" class="avatar" />
+      <span>{{ user.username }}</span> &#9660;
+    </div>
+
+    <div id="userDropdown" class="user-dropdown">
+      <a href="{{ url_for('user_profile') }}"><p>👤 My Profile</p></a>
+      <a href="{{ url_for('change_password') }}"><p>🔑 Change Password</p></a>
+      <p onclick="logout()">⏻ Logout</p>
+    </div>
+  </div>
+   </header>
+ 
+    <main class="dashboard-container">
+        
+        <section class="welcome-banner">
+            <div>
+                <h1>Welcome back, <span id="welcome-user-name">{{ user.username }}</span>! 👋</h1>
+                <p>Here is an overview of your event planning progress.</p>
+            </div>
+            <button class="new-event-btn"><a href="{{ url_for('user_services') }}">+ Plan New Event</a></button>
+        </section>
+
+        <!-- Dynamic Stats Grid updated via user_script.js -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="icon-box blue"><i class="fa-solid fa-calendar-check"></i></div>
+                <div>
+                    <h3 id="statActive">0</h3>
+                    <p>Active Bookings</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon-box orange"><i class="fa-solid fa-clock"></i></div>
+                <div>
+                    <h3 id="statPending">0</h3>
+                    <p>Pending Approval</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="icon-box green"><i class="fa-solid fa-wallet"></i></div>
+                <div>
+                    <h3 id="statSpent">₹ 0</h3>
+                    <p>Total Spent</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="dashboard-content-split">
+            
+            <div class="bookings-section">
+                <h2>My Bookings</h2>
+                <div id="bookingsList"></div>
+            </div>
+
+            <div class="profile-sidebar">
+                <div class="profile-card">
+                    <div class="profile-img">
+                        <img src="{{ user.profile_image or url_for('static', filename='images/default_avatar.svg') }}" alt="User">
+                        <button class="edit-icon" onclick="openEditProfileModal()"><i class="fa-solid fa-pen"></i></button>
+                    </div>
+                    <h3>{{ user.username }}</h3>
+                    <p>{{ user.email }}</p>
+                    <p>{{ user.contact or 'No phone added' }}</p>
+                    <p style="font-size:13px; color:var(--ink3);"><i class="fa-solid fa-location-dot"></i> {{ user.address or 'No address added' }}</p>
+                    <hr>
+                    <div class="profile-actions">
+                        <a href="#" onclick="openEditProfileModal(); return false;"><i class="fa-solid fa-gear"></i> Edit Profile</a>
+                        <a href="#" onclick="openWebsiteFeedbackModal(); return false;"><i class="fa-solid fa-star"></i> Rate Website</a>
+                        <a href="#" onclick="alert('For support, contact us at info@eventnest.com'); return false;"><i class="fa-solid fa-circle-question"></i> Help Center</a>
+                    </div>
+                </div>
+
+                <div class="notifications-card">
+                    <h3>Recent Activity</h3>
+                    <ul class="activity-list">
+                        <!-- Populated by JavaScript -->
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-col">
+        <h4 class="act"><i class="fa-solid fa-location-dot"></i> Address</h4>
+        <p>
+            <b>CMR College</b><br>  
+            Medchal District<br>
+            Pin-code: 501401<br>
+            Telangana, India
+        </p>
+        <a href="https://maps.google.com" target="_blank" class="map-link">
+            Get Directions <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="footer-col end">
+        <h4 class="act">Explore</h4>
+        <ul class="footer-links">
+            <li><a href="{{ url_for('user_services') }}">Our Services</a></li>
+            <li><a href="{{ url_for('user_gallery') }}">Event Gallery</a></li>
+            <li><a href="{{ url_for('user_about') }}">About Us</a></li>
+        </ul>
+    </div>
+
+    <div class="footer-col end">
+        <h4 class="act">Contact</h4>
+        <p><i class="fa-solid fa-phone"></i> 09343489432</p>
+        <p><i class="fa-brands fa-whatsapp"></i> +91 9999999999</p>
+        <p><i class="fa-solid fa-envelope"></i> info@eventnest.com</p>
+        
+        <div class="legal-links">
+            <a href="#">Privacy Policy</a> | <a href="#">Terms</a>
+        </div>
+    </div>
+
+    <div class="footer-col" id="last">
+        <h4 class="act">Follow Us</h4>
+        <div class="social-icons">
+            <a href="https://www.facebook.com"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.linkedin.com"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="https://www.github.com"><i class="fa-brands fa-github"></i></a>
+            <a href="https://www.instagram.com"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+        
+        <p class="copyright">©2035 by Event Nest. <br> Powered and secured by FireWall</p>
+        
+        <button id="down">
+            <a href="{{ url_for('user_services') }}" id="no">BOOK NOW</a>
+        </button>
+    </div>
+  </footer>
+
+  <!-- EDIT PROFILE MODAL -->
+  <div class="modal-overlay" id="editProfileOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+    <div class="modal-box" style="background:white; border-radius:12px; max-width: 500px; width:90%; padding:30px; box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+      <div class="modal-head" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:15px;">
+        <div>
+          <div class="modal-pkg-label" style="color:var(--teal); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:1px;">👤 MY PROFILE</div>
+          <div class="modal-pkg-name" style="font-size:24px; font-weight:700; color:var(--ink); margin-top:4px;">Update Details</div>
+        </div>
+        <button class="modal-close" onclick="closeEditProfileModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#999;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('user_profile') }}" method="POST" enctype="multipart/form-data" style="display:flex; flex-direction:column; gap:15px;">
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <label style="font-weight:600; font-size:14px; color:#333;">Username</label>
+            <input type="text" name="username" value="{{ user.username }}" required style="padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px;" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <label style="font-weight:600; font-size:14px; color:#333;">Profile Picture</label>
+            <input type="file" name="profile_image" accept="image/*" style="padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px;" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <label style="font-weight:600; font-size:14px; color:#333;">Contact Number</label>
+            <input type="text" name="contact" value="{{ user.contact or '' }}" style="padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px;" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <label style="font-weight:600; font-size:14px; color:#333;">Address</label>
+            <input type="text" name="address" value="{{ user.address or '' }}" style="padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px;" />
+          </div>
+          <button type="submit" class="submit-btn" style="background:#18aef3; color:white; border:none; padding:12px; border-radius:6px; font-weight:600; cursor:pointer; margin-top:10px; font-size:15px;">Save Changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- WISHLIST MODAL -->
+  <div class="modal-overlay" id="wishlistOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+    <div class="modal-box" style="background:white; border-radius:12px; max-width:600px; width:90%; max-height:80vh; overflow-y:auto; padding:30px; box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+      <div class="modal-head" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:15px;">
+        <div>
+          <div class="modal-pkg-label" style="color:var(--teal); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:1px;">❤️ MY WISHLIST</div>
+          <div class="modal-pkg-name" id="wishlistTitle" style="font-size:24px; font-weight:700; color:var(--ink); margin-top:4px;">Saved Vendors</div>
+        </div>
+        <button class="modal-close" onclick="closeWishlistModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#999;">&times;</button>
+      </div>
+      <div class="modal-body" id="wishlistBody">
+        <!-- Wishlist items will be rendered here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- WEBSITE FEEDBACK MODAL -->
+  <div class="modal-overlay" id="websiteFeedbackOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+    <div class="modal-box" style="background:white; border-radius:12px; max-width: 500px; width:90%; padding:30px; box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+      <div class="modal-head" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:15px;">
+        <div>
+          <div class="modal-pkg-label" style="color:var(--teal); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:1px;">⭐ WEBSITE FEEDBACK</div>
+          <div class="modal-pkg-name" style="font-size:24px; font-weight:700; color:var(--ink); margin-top:4px;">Rate Our Website</div>
+        </div>
+        <button class="modal-close" onclick="closeWebsiteFeedbackModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#999;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="websiteFeedbackForm" style="display:flex; flex-direction:column; gap:15px;">
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <label style="font-weight:600; font-size:14px; color:#333;">Rating</label>
+            <div class="rating-stars" style="display:flex; gap:10px; font-size:28px; color:#ccc; cursor:pointer;">
+              <span onclick="setWebsiteRating(1)" class="star" data-value="1">★</span>
+              <span onclick="setWebsiteRating(2)" class="star" data-value="2">★</span>
+              <span onclick="setWebsiteRating(3)" class="star" data-value="3">★</span>
+              <span onclick="setWebsiteRating(4)" class="star" data-value="4">★</span>
+              <span onclick="setWebsiteRating(5)" class="star" data-value="5">★</span>
+            </div>
+            <input type="hidden" id="websiteRatingVal" name="rating" value="" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <label style="font-weight:600; font-size:14px; color:#333;">Feedback / Comments</label>
+            <textarea id="websiteFeedbackText" placeholder="Tell us what you think of our website..." required style="padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px; min-height:100px; resize:vertical; font-family: 'Poppins', sans-serif;"></textarea>
+          </div>
+          <button type="submit" class="submit-btn" style="background:#18aef3; color:white; border:none; padding:12px; border-radius:6px; font-weight:600; cursor:pointer; margin-top:10px; font-size:15px;">Submit Feedback</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- VENDOR REVIEW MODAL -->
+  <div class="modal-overlay" id="vendorReviewOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+    <div class="modal-box" style="background:white; border-radius:12px; max-width: 500px; width:90%; padding:30px; box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+      <div class="modal-head" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:15px;">
+        <div>
+          <div class="modal-pkg-label" style="color:var(--teal); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:1px;">🤝 VENDOR REVIEW</div>
+          <div class="modal-pkg-name" id="vendorReviewTitle" style="font-size:24px; font-weight:700; color:var(--ink); margin-top:4px;">Rate Vendor</div>
+        </div>
+        <button class="modal-close" onclick="closeVendorReviewModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#999;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="vendorReviewForm" style="display:flex; flex-direction:column; gap:15px;">
+          <input type="hidden" id="reviewBookingId" value="" />
+          <input type="hidden" id="reviewVendorId" value="" />
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <label style="font-weight:600; font-size:14px; color:#333;">Rating</label>
+            <div class="rating-stars-vendor" style="display:flex; gap:10px; font-size:28px; color:#ccc; cursor:pointer;">
+              <span onclick="setVendorRating(1)" class="star-vendor" data-value="1">★</span>
+              <span onclick="setVendorRating(2)" class="star-vendor" data-value="2">★</span>
+              <span onclick="setVendorRating(3)" class="star-vendor" data-value="3">★</span>
+              <span onclick="setVendorRating(4)" class="star-vendor" data-value="4">★</span>
+              <span onclick="setVendorRating(5)" class="star-vendor" data-value="5">★</span>
+            </div>
+            <input type="hidden" id="vendorRatingVal" name="rating" value="" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <label style="font-weight:600; font-size:14px; color:#333;">Review / Experience</label>
+            <textarea id="vendorReviewText" placeholder="Describe your experience with this vendor..." required style="padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px; min-height:100px; resize:vertical; font-family: 'Poppins', sans-serif;"></textarea>
+          </div>
+          <button type="submit" class="submit-btn" style="background:#18aef3; color:white; border:none; padding:12px; border-radius:6px; font-weight:600; cursor:pointer; margin-top:10px; font-size:15px;">Submit Review</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKING CANCELLATION MODAL -->
+  <div class="modal-overlay" id="cancelBookingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+    <div class="modal-box" style="background:white; border-radius:12px; max-width: 500px; width:90%; padding:30px; box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+      <div class="modal-head" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:15px;">
+        <div>
+          <div class="modal-pkg-label" style="color:#ef4444; font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:1px;">⚠️ CANCEL BOOKING</div>
+          <div class="modal-pkg-name" id="cancelBookingTitle" style="font-size:24px; font-weight:700; color:#333; margin-top:4px;">Cancel Service</div>
+        </div>
+        <button class="modal-close" onclick="closeCancelBookingModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#999;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="cancelBookingForm" style="display:flex; flex-direction:column; gap:15px;">
+          <input type="hidden" id="cancelBookingId" value="" />
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <label style="font-weight:600; font-size:14px; color:#333;">Reason for Cancellation</label>
+            <select id="cancelReasonSelect" required style="padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px; font-family: 'Poppins', sans-serif;">
+              <option value="">-- Select a Reason --</option>
+              <option value="Event Postponed">Event Postponed</option>
+              <option value="Budget Constraints">Budget Constraints</option>
+              <option value="Change of Mind / Vendor Change">Change of Mind / Vendor Change</option>
+              <option value="Other">Other (Please specify below)</option>
+            </select>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <label style="font-weight:600; font-size:14px; color:#333;">Detailed Explanation</label>
+            <textarea id="cancelExplanation" placeholder="Please provide details about your cancellation..." required style="padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px; min-height:100px; resize:vertical; font-family: 'Poppins', sans-serif;"></textarea>
+          </div>
+          <div style="background:#fee2e2; border:1px solid #fca5a5; border-radius:6px; padding:12px; color:#991b1b; font-size:13px; font-weight:500;">
+            ⚠️ <strong>Warning:</strong> Any advance payment already paid to the vendor is non-refundable as per the booking policy.
+          </div>
+          <button type="submit" class="submit-btn" style="background:#ef4444; color:white; border:none; padding:12px; border-radius:6px; font-weight:600; cursor:pointer; margin-top:10px; font-size:15px;">Confirm Cancellation</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/user/sigup_script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/user/user_script.js', v='1.4') }}"></script>
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Services | Vendor Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vendor/services.css', v='1.3') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="navbar">
+    
+    <!-- Header -->
+        <div class="logo">
+          make
+          <img
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
+            alt=""
+            class="image"
+          />
+          event
+        </div>
+
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="serviceSearchInput" placeholder="Search services..." onkeyup="filterServices()">
+    </div>
+
+    <nav class="desktop-nav">
+      <a href="{{ url_for('vendor_dashboard') }}" class="option">Dashboard</a>
+      <a href="{{ url_for('vendor_services') }}" class="option" style="color:#2196f3;">My Services</a>
+      <a href="{{ url_for('vendor_earnings') }}" class="option">Earnings</a>
+      <a href="{{ url_for('vendor_messages') }}" class="option">Messages</a>
+      <a href="{{ url_for('vendor_profile') }}" class="option">Profile</a>
+      <a href="{{ url_for('change_password') }}" class="option">Change Password</a>
+    </nav>
+    <!-- Notification Bell -->
+    <div class="icon-btn" onclick="toggleNotificationDropdown(event)" style="position: relative; margin-right: 15px; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 5px; color: inherit;">
+        🔔 <span style="font-weight: 500;">Notifications <span id="notification-badge" style="display: none; background: #ef4444; color: white; border-radius: 50%; padding: 1px 6px; font-size: 10px; font-weight: bold; margin-left: 2px;"></span></span>
+        
+        <!-- Notification Dropdown -->
+        <div id="notificationDropdown" class="user-dropdown" style="display: none; width: 320px; padding: 10px 0; right: 0; top: 40px; text-align: left; max-height: 400px; overflow: hidden; flex-direction: column; position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000;">
+            <div style="padding: 5px 15px 10px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 14px; color: #1e293b;">Recent Alerts</span>
+                <span onclick="markVendorNotificationsAsRead(event)" style="font-size: 12px; color: #2196f3; cursor: pointer; font-weight: normal;">Mark all read</span>
+            </div>
+            <div id="notificationDropdownList" style="max-height: 280px; overflow-y: auto; padding: 5px 0;">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <div class="auth">
+      <button class="register" style="background-color: #333;" onclick="location.href='/logout'"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
+
+  <main class="admin-container">
+      
+      <div class="admin-hero-enhanced">
+          <div class="hero-text">
+              <h1>Service & Package Portfolio</h1>
+              <p>Showcase your best work. Manage services, full packages, and pricing.</p>
+              <div class="hero-badges">
+                  <span><i class="fa-solid fa-layer-group"></i> Services: {{ services|length }}</span>
+                  <span><i class="fa-solid fa-gift"></i> Packages: {{ packages|length }}</span>
+              </div>
+          </div>
+          <div class="hero-visual" style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="glass-btn primary" id="addServiceBtn" onclick="openModal()"><i class="fa-solid fa-plus"></i> Add New Service</button>
+              <button class="glass-btn primary" id="addPackageBtn" onclick="openPackageModal()" style="display:none; background-color:#4caf50; border-color:#4caf50; box-shadow: 0 4px 15px rgba(76,175,80,0.3);"><i class="fa-solid fa-plus"></i> Add New Package</button>
+          </div>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div style="padding: 15px; margin-bottom: 20px; border-radius: 4px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- Tabs Toggle Bar -->
+      <div class="filter-bar" style="margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+          <div class="mode-toggle-inner" style="display: inline-flex; gap: 10px; background: rgba(0,0,0,0.04); padding: 5px; border-radius: 8px;">
+              <button class="minimal-tab active" id="tabServices" onclick="switchVendorMode('services')" style="padding: 8px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s; background: white; color: #2196f3; box-shadow: 0 2px 5px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-layer-group"></i> My Services</button>
+              <button class="minimal-tab" id="tabPackages" onclick="switchVendorMode('packages')" style="padding: 8px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s; background: transparent; color: #555; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-gift"></i> My Packages</button>
+          </div>
+      </div>
+
+      <!-- SERVICES SECTION -->
+      <div id="servicesSection">
+          <div class="filter-bar">
+              <select class="minimal-select" id="categoryFilter" onchange="filterServices()">
+                  <option value="all">All Categories</option>
+                  <option value="Decoration">Decoration</option>
+                  <option value="Catering">Catering</option>
+                  <option value="Photography">Photography</option>
+                  <option value="Entertainment">Entertainment</option>
+              </select>
+              <div class="view-toggles">
+                  <button class="icon-btn-plain active"><i class="fa-solid fa-grid-2"></i></button>
+                  <button class="icon-btn-plain"><i class="fa-solid fa-list"></i></button>
+              </div>
+          </div>
+
+          <div class="services-grid" id="servicesContainer">
+              {% for s in services %}
+              <div class="service-card" data-category="{{ s.category }}">
+                  <div class="s-card-img">
+                      <img src="{{ s.image_url or 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=600&auto=format&fit=crop' }}" alt="{{ s.name }}">
+                      <span class="status-tag {{ s.status.lower() }}">{{ s.status }}</span>
+                  </div>
+                  <div class="s-card-body">
+                      <div class="s-top">
+                          <span class="s-cat">{{ s.category }}</span>
+                          <span class="s-price">{{ s.price_label }}</span>
+                      </div>
+                      <h3>{{ s.name }}</h3>
+                      <p class="s-desc">{{ s.description }}</p>
+                      <div class="s-actions">
+                          <button class="s-btn edit" onclick="openEditModal('{{ s.service_id }}', '{{ s.name|escape }}', '{{ s.category|escape }}', '{{ s.price_label|escape }}', '{{ s.description|escape }}', '{{ s.image_url|escape }}', '{{ s.status|escape }}')"><i class="fa-solid fa-pen"></i> Edit</button>
+                          <form action="{{ url_for('vendor_delete_service', service_id=s.service_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service?');" style="display:inline;">
+                              <button type="submit" class="s-btn delete"><i class="fa-solid fa-trash"></i> Delete</button>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+              {% else %}
+              <p style="grid-column: 1/-1; text-align: center; color: #666; padding: 20px;">No services added yet. Click 'Add New Service' to showcase your offerings.</p>
+              {% endfor %}
+          </div>
+      </div>
+
+      <!-- PACKAGES SECTION -->
+      <div id="packagesSection" style="display:none;">
+          <div class="services-grid" id="packagesContainer">
+              {% for p in packages %}
+              <div class="service-card" style="border-top: 4px solid {% if p.tier == 'Platinum' %}#7952b3{% elif p.tier == 'Gold' %}#ffc107{% elif p.tier == 'Silver' %}#6c757d{% else %}#17a2b8{% endif %};">
+                  <div class="s-card-img" style="height: 160px; overflow: hidden; position: relative;">
+                      <img src="{{ p.image_url or 'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?q=80&w=600&auto=format&fit=crop' }}" alt="{{ p.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                      <span class="status-tag active" style="background-color: {% if p.tier == 'Platinum' %}#7952b3{% elif p.tier == 'Gold' %}#ffc107{% elif p.tier == 'Silver' %}#6c757d{% else %}#17a2b8{% endif %}; font-size: 11px;">{{ p.tier }} Tier</span>
+                  </div>
+                  <div class="s-card-body" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                      <div class="s-top" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                          <span class="s-cat" style="text-transform: uppercase; font-size: 11px; font-weight: 700; color: #777;"><i class="fa-solid fa-gift"></i> Full Package</span>
+                          <span class="s-price" style="font-weight: 700; color: #2196f3; font-size: 17px;">
+                              {% set total_p = namespace(val=0) %}
+                              {% for ps in p.services %}
+                                  {% set total_p.val = total_p.val + ps.price %}
+                              {% endfor %}
+                              ₹{{ total_p.val|int }}
+                          </span>
+                      </div>
+                      <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #333;">{{ p.title }}</h3>
+                      <p class="s-desc" style="color: #666; font-size: 13px; margin: 0; line-height: 1.5; height: auto; display: block; overflow: visible;">{{ p.subtitle }}</p>
+                      
+                      <div style="border-top: 1px solid #eee; padding-top: 10px; margin-top: 5px;">
+                          <strong style="font-size: 12px; color: #555; display: block; margin-bottom: 8px;"><i class="fa-solid fa-list-check"></i> Included Services ({{ p.services|length }}):</strong>
+                          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">
+                              {% for ps in p.services %}
+                              <li style="font-size: 12px; display: flex; justify-content: space-between; align-items: center; color: #444;">
+                                  <span><i class="fa-solid {{ ps.icon or 'fa-star' }}" style="color: #17a2b8; margin-right: 6px; width: 14px;"></i>{{ ps.label }}</span>
+                                  <strong style="color: #777;">₹{{ ps.price|int }}</strong>
+                              </li>
+                              {% endfor %}
+                          </ul>
+                      </div>
+                      
+                      <div class="s-actions" style="margin-top: 10px; display: flex; gap: 10px; width: 100%;">
+                          <button type="button" class="s-btn edit" 
+                                  data-id="{{ p.package_id }}"
+                                  data-title="{{ p.title }}"
+                                  data-tier="{{ p.tier }}"
+                                  data-quote-text="{{ p.quote_text }}"
+                                  data-event-type="{{ p.event_type_slug }}"
+                                  data-subtitle="{{ p.subtitle }}"
+                                  data-image-url="{{ p.image_url }}"
+                                  data-services="{{ p.services|map(attribute='label')|list|tojson|safe|forceescape }}"
+                                  onclick="openEditPackageModal(this)"
+                                  style="flex: 1; border: 1.5px solid #2196f3; color: #2196f3; background: transparent; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;">
+                              <i class="fa-solid fa-pen"></i> Edit
+                          </button>
+                          <form action="/vendor/package/{{ p.package_id }}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this full package?');" style="flex: 1; margin: 0; display: inline;">
+                              <button type="submit" class="s-btn delete" style="width: 100%; border: 1.5px solid #f44336; color: #f44336; background: transparent; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;">
+                                  <i class="fa-solid fa-trash"></i> Delete
+                              </button>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+              {% else %}
+              <p style="grid-column: 1/-1; text-align: center; color: #666; padding: 40px 20px;">No Full Packages created yet. Click 'Add New Package' to bundle your services into custom packages!</p>
+              {% endfor %}
+          </div>
+      </div>
+  </main>
+
+  <div id="serviceModal" class="modal-overlay">
+      <div class="modal-card">
+          <div class="modal-header">
+              <h2>Add New Service</h2>
+              <span class="close-modal" onclick="closeModal()">✖</span>
+          </div>
+          <form class="modal-form" action="{{ url_for('vendor_services') }}" method="POST" enctype="multipart/form-data">
+              <div class="form-group">
+                  <label>Service Name</label>
+                  <input type="text" name="name" placeholder="e.g. Premium Wedding Catering" required>
+              </div>
+              <div class="form-row">
+                  <div class="form-group">
+                      <label>Category</label>
+                      <select name="category">
+                          <option value="Decoration">Decoration</option>
+                          <option value="Catering">Catering</option>
+                          <option value="Photography">Photography</option>
+                          <option value="Music/DJ">Music/DJ</option>
+                          <option value="Makeup Artist">Makeup Artist</option>
+                          <option value="Transportation">Transportation</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label>Price (₹)</label>
+                      <input type="text" name="price_label" placeholder="e.g. 1,50,000" required>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label>Description</label>
+                  <textarea name="description" rows="3" placeholder="Describe the service inclusions..." required></textarea>
+              </div>
+              <div class="form-row">
+                  <div class="form-group">
+                      <label>Image URL</label>
+                      <input type="text" name="image_url" placeholder="https://images.unsplash.com/photo-...">
+                  </div>
+                  <div class="form-group">
+                      <label>Or Upload Image</label>
+                      <input type="file" name="image_file" accept="image/*">
+                  </div>
+              </div>
+              <button type="submit" class="primary-btn full-width">Publish Service</button>
+          </form>
+      </div>
+  </div>
+
+  <div id="editServiceModal" class="modal-overlay">
+      <div class="modal-card">
+          <div class="modal-header">
+              <h2>Edit Service</h2>
+              <span class="close-modal" onclick="closeEditModal()">✖</span>
+          </div>
+          <form class="modal-form" id="editServiceForm" method="POST" enctype="multipart/form-data">
+              <div class="form-group">
+                  <label>Service Name</label>
+                  <input type="text" id="edit_name" name="name" required>
+              </div>
+              <div class="form-row">
+                  <div class="form-group">
+                      <label>Category</label>
+                      <select name="category" id="edit_category">
+                          <option value="Decoration">Decoration</option>
+                          <option value="Catering">Catering</option>
+                          <option value="Photography">Photography</option>
+                          <option value="Music/DJ">Music/DJ</option>
+                          <option value="Makeup Artist">Makeup Artist</option>
+                          <option value="Transportation">Transportation</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label>Price (₹)</label>
+                      <input type="text" name="price_label" id="edit_price" required>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label>Description</label>
+                  <textarea name="description" id="edit_description" rows="3" required></textarea>
+              </div>
+              <div class="form-row">
+                  <div class="form-group">
+                      <label>Image URL</label>
+                      <input type="text" name="image_url" id="edit_image_url">
+                  </div>
+                  <div class="form-group">
+                      <label>Or Upload Image</label>
+                      <input type="file" name="image_file" accept="image/*">
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label>Status</label>
+                  <select name="status" id="edit_status">
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                  </select>
+              </div>
+              <button type="submit" class="primary-btn full-width">Save Changes</button>
+          </form>
+      </div>
+  </div>
+
+  <div id="packageModal" class="modal-overlay">
+      <div class="modal-card" style="max-width: 550px;">
+          <div class="modal-header">
+              <h2>Add New Full Package</h2>
+              <span class="close-modal" onclick="closePackageModal()">✖</span>
+          </div>
+          <form class="modal-form" action="/vendor/package/add" method="POST" enctype="multipart/form-data">
+              <div class="form-group">
+                  <label>Package Title</label>
+                  <input type="text" name="title" placeholder="e.g. Dream Silver Wedding Bundle" required>
+              </div>
+              <div class="form-row">
+                  <div class="form-group">
+                      <label>Package Tier</label>
+                      <select name="tier">
+                          <option value="Standard">Standard Tier</option>
+                          <option value="Silver">Silver Tier</option>
+                          <option value="Gold">Gold Tier</option>
+                          <option value="Platinum">Platinum Tier</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label>Quote Tagline</label>
+                      <input type="text" name="quote_text" placeholder="e.g. Best event ever!">
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label>Event Category / Type</label>
+                  <select name="event_type" required>
+                      <option value="wedding">Weddings</option>
+                      <option value="birthday">Birthdays</option>
+                      <option value="corporate">Corporate Events</option>
+                      <option value="anniversary">Anniversaries</option>
+                      <option value="babyshower">Baby Showers</option>
+                      <option value="party">Private Parties</option>
+                      <option value="movie">Movie Screenings</option>
+                      <option value="cultural">Cultural Events</option>
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label>Subtitle / Description</label>
+                  <textarea name="subtitle" rows="2" maxlength="255" placeholder="Briefly describe the theme or benefit of this package (max 255 chars)..." required></textarea>
+              </div>
+              
+              <div class="form-group" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 15px;">
+                  <strong style="display: block; margin-bottom: 10px; font-size: 13px; color: #333;"><i class="fa-solid fa-square-check"></i> Select Services to Bundle in Package:</strong>
+                  <div style="max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                      {% for s in services %}
+                      <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; color: #444; background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid #eee; transition: all 0.2s;">
+                          <input type="checkbox" name="services" value="{{ s.service_id }}" style="cursor: pointer; width: 16px; height: 16px;">
+                          <span style="flex: 1; font-weight: 600;">{{ s.name }}</span>
+                          <span style="color: #777; font-size: 11px; text-transform: uppercase; background: #eee; padding: 2px 6px; border-radius: 4px;">{{ s.category }}</span>
+                          <strong style="color: #2196f3;">{{ s.price_label }}</strong>
+                      </label>
+                      {% else %}
+                      <p style="color: #f44336; font-size: 13px; margin: 0; padding: 10px; text-align: center;">You must create at least one active Service first before creating a package!</p>
+                      {% endfor %}
+                  </div>
+              </div>
+
+              <div class="form-row">
+                  <div class="form-group">
+                      <label>Package Cover Image URL</label>
+                      <input type="text" name="image_url" placeholder="https://images.unsplash.com/photo-...">
+                  </div>
+                  <div class="form-group">
+                      <label>Or Upload Cover Image</label>
+                      <input type="file" name="image_file" accept="image/*">
+                  </div>
+              </div>
+              <button type="submit" class="primary-btn full-width" style="background-color: #4caf50; border-color: #4caf50;">Publish Full Package</button>
+          </form>
+      </div>
+  </div>
+
+  <div id="editPackageModal" class="modal-overlay">
+      <div class="modal-card" style="max-width: 550px;">
+          <div class="modal-header">
+              <h2>Edit Full Package</h2>
+              <span class="close-modal" onclick="closeEditPackageModal()">✖</span>
+          </div>
+          <form class="modal-form" id="editPackageForm" method="POST" enctype="multipart/form-data">
+              <div class="form-group">
+                  <label>Package Title</label>
+                  <input type="text" id="edit_pkg_title" name="title" required>
+              </div>
+              <div class="form-row">
+                  <div class="form-group">
+                      <label>Package Tier</label>
+                      <select id="edit_pkg_tier" name="tier">
+                          <option value="Standard">Standard Tier</option>
+                          <option value="Silver">Silver Tier</option>
+                          <option value="Gold">Gold Tier</option>
+                          <option value="Platinum">Platinum Tier</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label>Quote Tagline</label>
+                      <input type="text" id="edit_pkg_quote_text" name="quote_text">
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label>Event Category / Type</label>
+                  <select id="edit_pkg_event_type" name="event_type" required>
+                      <option value="wedding">Weddings</option>
+                      <option value="birthday">Birthdays</option>
+                      <option value="corporate">Corporate Events</option>
+                      <option value="anniversary">Anniversaries</option>
+                      <option value="babyshower">Baby Showers</option>
+                      <option value="party">Private Parties</option>
+                      <option value="movie">Movie Screenings</option>
+                      <option value="cultural">Cultural Events</option>
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label>Subtitle / Description</label>
+                  <textarea id="edit_pkg_subtitle" name="subtitle" rows="2" maxlength="255" required></textarea>
+              </div>
+              
+              <div class="form-group" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 15px;">
+                  <strong style="display: block; margin-bottom: 10px; font-size: 13px; color: #333;"><i class="fa-solid fa-square-check"></i> Select Services to Bundle in Package:</strong>
+                  <div style="max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                      {% for s in services %}
+                      <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; color: #444; background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid #eee; transition: all 0.2s;">
+                          <input type="checkbox" name="services" class="edit-pkg-svc-cb" data-label="{{ s.name }}" value="{{ s.service_id }}" style="cursor: pointer; width: 16px; height: 16px;">
+                          <span style="flex: 1; font-weight: 600;">{{ s.name }}</span>
+                          <span style="color: #777; font-size: 11px; text-transform: uppercase; background: #eee; padding: 2px 6px; border-radius: 4px;">{{ s.category }}</span>
+                          <strong style="color: #2196f3;">{{ s.price_label }}</strong>
+                      </label>
+                      {% else %}
+                      <p style="color: #f44336; font-size: 13px; margin: 0; padding: 10px; text-align: center;">You must create at least one active Service first before creating a package!</p>
+                      {% endfor %}
+                  </div>
+              </div>
+
+              <div class="form-row">
+                  <div class="form-group">
+                      <label>Package Cover Image URL</label>
+                      <input type="text" id="edit_pkg_image_url" name="image_url">
+                  </div>
+                  <div class="form-group">
+                      <label>Or Upload Cover Image</label>
+                      <input type="file" name="image_file" accept="image/*">
+                  </div>
+              </div>
+              <button type="submit" class="primary-btn full-width" style="background-color: #4caf50; border-color: #4caf50;">Save Changes</button>
+          </form>
+      </div>
+  </div>
+
+  <footer>
+        <div class="footer-col">
+            CMR college <br>  
+            Kandlakoya<br>
+            Medchel Telangana
+        </div>
+        <div class="footer-col end">
+            Tel: 08965436 <br>
+            Ph.no:91 8976564390<br>
+            info@eventnest.com
+        </div>
+        <div class="footer-col end">
+            ©2035 by EventNest. <br>
+            Powered and secured by FireWall
+        </div>
+        <div class="footer-col" id="last">
+            <div class="social-icons">
+                <a href="https://www.facebook.com"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://github.com"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.instagram.com"><i class="fa-brands fa-instagram"></i></a>
+            </div> 
+            <br>
+            <button id="down"><a href="{{ url_for('vendor_booking') }}" id="no">Bookings</a></button>
+        </div>
+    </footer>
+
+  <script>
+    function openModal() {
+        document.getElementById('serviceModal').style.display = 'flex';
+    }
+    function closeModal() {
+        document.getElementById('serviceModal').style.display = 'none';
+    }
+    function openEditModal(id, name, category, price, description, imageUrl, status) {
+        const form = document.getElementById('editServiceForm');
+        form.action = `/vendor/service/${id}/edit`;
+        document.getElementById('edit_name').value = name;
+        document.getElementById('edit_category').value = category;
+        document.getElementById('edit_price').value = price;
+        document.getElementById('edit_description').value = description;
+        document.getElementById('edit_image_url').value = imageUrl;
+        document.getElementById('edit_status').value = status;
+        document.getElementById('editServiceModal').style.display = 'flex';
+    }
+    function closeEditModal() {
+        document.getElementById('editServiceModal').style.display = 'none';
+    }
+    function openPackageModal() {
+        document.getElementById('packageModal').style.display = 'flex';
+    }
+    function closePackageModal() {
+        document.getElementById('packageModal').style.display = 'none';
+    }
+    function openEditPackageModal(btn) {
+        const id = btn.getAttribute('data-id');
+        const title = btn.getAttribute('data-title');
+        const tier = btn.getAttribute('data-tier');
+        const quoteText = btn.getAttribute('data-quote-text');
+        const eventType = btn.getAttribute('data-event-type');
+        const subtitle = btn.getAttribute('data-subtitle');
+        const imageUrl = btn.getAttribute('data-image-url');
+        const includedServiceLabels = JSON.parse(btn.getAttribute('data-services') || '[]');
+
+        const form = document.getElementById('editPackageForm');
+        form.action = `/vendor/package/${id}/edit`;
+        
+        document.getElementById('edit_pkg_title').value = title;
+        document.getElementById('edit_pkg_tier').value = tier;
+        document.getElementById('edit_pkg_quote_text').value = quoteText;
+        document.getElementById('edit_pkg_event_type').value = eventType;
+        document.getElementById('edit_pkg_subtitle').value = subtitle;
+        document.getElementById('edit_pkg_image_url').value = imageUrl;
+        
+        // Reset all checkboxes first
+        const checkboxes = document.querySelectorAll('.edit-pkg-svc-cb');
+        checkboxes.forEach(cb => {
+            cb.checked = false;
+        });
+        
+        // Check checkboxes that match the included service labels
+        checkboxes.forEach(cb => {
+            const label = cb.getAttribute('data-label');
+            if (includedServiceLabels.includes(label)) {
+                cb.checked = true;
+            }
+        });
+        
+        document.getElementById('editPackageModal').style.display = 'flex';
+    }
+    function closeEditPackageModal() {
+        document.getElementById('editPackageModal').style.display = 'none';
+    }
+    function switchVendorMode(mode) {
+        const btnServices = document.getElementById('tabServices');
+        const btnPackages = document.getElementById('tabPackages');
+        const secServices = document.getElementById('servicesSection');
+        const secPackages = document.getElementById('packagesSection');
+        const addSvcBtn = document.getElementById('addServiceBtn');
+        const addPkgBtn = document.getElementById('addPackageBtn');
+        
+        if (mode === 'packages') {
+            btnServices.classList.remove('active');
+            btnServices.style.background = 'transparent';
+            btnServices.style.color = '#555';
+            btnServices.style.boxShadow = 'none';
+            
+            btnPackages.classList.add('active');
+            btnPackages.style.background = 'white';
+            btnPackages.style.color = '#2196f3';
+            btnPackages.style.boxShadow = '0 2px 5px rgba(0,0,0,0.08)';
+            
+            secServices.style.display = 'none';
+            secPackages.style.display = 'block';
+            
+            addSvcBtn.style.display = 'none';
+            addPkgBtn.style.display = 'inline-flex';
+        } else {
+            btnPackages.classList.remove('active');
+            btnPackages.style.background = 'transparent';
+            btnPackages.style.color = '#555';
+            btnPackages.style.boxShadow = 'none';
+            
+            btnServices.classList.add('active');
+            btnServices.style.background = 'white';
+            btnServices.style.color = '#2196f3';
+            btnServices.style.boxShadow = '0 2px 5px rgba(0,0,0,0.08)';
+            
+            secPackages.style.display = 'none';
+            secServices.style.display = 'block';
+            
+            addPkgBtn.style.display = 'none';
+            addSvcBtn.style.display = 'inline-flex';
+        }
+    }
+    function filterServices() {
+        const category = document.getElementById('categoryFilter').value;
+        const query = document.getElementById('serviceSearchInput') ? document.getElementById('serviceSearchInput').value.toLowerCase().trim() : '';
+        const cards = document.querySelectorAll('.service-card');
+        let visibleCount = 0;
+        cards.forEach(card => {
+            const cardCat = card.getAttribute('data-category');
+            if (!cardCat) return; // Skip package cards
+            const name = card.querySelector('h3').innerText.toLowerCase();
+            const desc = card.querySelector('.s-desc').innerText.toLowerCase();
+            
+            const matchesCategory = (category === 'all' || cardCat.toLowerCase() === category.toLowerCase());
+            const matchesSearch = (!query || name.includes(query) || desc.includes(query));
+            
+            if (matchesCategory && matchesSearch) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        const tc = document.getElementById('totalCount');
+        if (tc) tc.innerText = visibleCount;
+    }
+  </script>
+  <script src="{{ url_for('static', filename='js/vendor/vendor_script.js') }}"></script>
+</body>
+</html>

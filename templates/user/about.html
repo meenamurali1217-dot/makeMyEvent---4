@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>About Us | EventNest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user/about_style.css', v='1.5') }}">
+</head>
+<body>
+
+  <div class="head_and_hero">
+    <header class="navbar">
+        <div class="logo">
+          make
+          <img
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
+            alt=""
+            class="image"
+          />
+          event
+        </div>
+
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Search events or Services..." />
+        </div>
+
+        <nav>
+          <a href="{{ url_for('user_home') }}" class="option">Home</a>
+          <a href="{{ url_for('user_services') }}" class="option">Services</a>
+          <a href="{{ url_for('user_gallery') }}" class="option">Gallery</a>
+          <a href="{{ url_for('user_about') }}" class="option">About</a>
+          <a href="{{ url_for('user_messages') }}" class="option">Messages</a>
+        </nav>
+
+        <div class="icon-btn" onclick="openWishlistModal()">
+      ❤️
+      <span>Wishlist <span id="wishlist-count" style="display:none;"></span></span>
+    </div>
+    
+    <!-- Notification Bell -->
+    <div class="icon-btn" onclick="toggleNotificationDropdown(event)" style="position: relative; margin-right: 15px; cursor: pointer; user-select: none;">
+        🔔 <span style="font-weight: 500;">Notifications <span id="notification-badge" style="display: none; background: #ef4444; color: white; border-radius: 50%; padding: 1px 6px; font-size: 10px; font-weight: bold; margin-left: 2px;"></span></span>
+        
+        <!-- Notification Dropdown -->
+        <div id="notificationDropdown" class="user-dropdown" style="display: none; width: 320px; padding: 10px 0; right: 0; top: 40px; text-align: left; max-height: 400px; overflow: hidden; flex-direction: column;">
+            <div style="padding: 5px 15px 10px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 14px; color: #1e293b;">Recent Alerts</span>
+                <span onclick="markNotificationsAsRead(event)" style="font-size: 12px; color: #2196f3; cursor: pointer; font-weight: normal;">Mark all read</span>
+            </div>
+            <div id="notificationDropdownList" style="max-height: 280px; overflow-y: auto; padding: 5px 0;">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+  <!-- User Menu -->
+  <div class="user-menu">
+    <div class="user-btn" onclick="toggleUserMenu()">
+      <img src="{{ user.profile_image or url_for('static', filename='images/default_avatar.svg') }}" alt="User Avatar" class="avatar" />
+      <span>{{ user.username }}</span> &#9660;
+    </div>
+
+    <div id="userDropdown" class="user-dropdown">
+      <a href="{{ url_for('user_profile') }}"><p>👤 My Profile</p></a>
+      <a href="{{ url_for('change_password') }}"><p>🔑 Change Password</p></a>
+      <p onclick="logout()">⏻ Logout</p>
+    </div>
+  </div>
+      </header>
+
+  <main class="content">
+    
+    <section class="hero">
+      <div class="hero-text">
+        <h1>About Event Nest</h1>
+        <p>Making every celebration memorable and stress-free.</p>
+      </div>
+      
+    </section>
+    </div>
+
+    <section class="who" id="who-we-are">
+      <div class="who-text">
+        <h2>Who We Are</h2>
+        <p>
+          Founded with a passion for bringing people together, Event Nest has grown from a small local planning firm into a premier comprehensive event management platform. We believe that every milestone deserves to be celebrated perfectly.
+        </p>
+        <p style="margin-top: 15px;">
+          Whether you are planning an intimate gathering, a grand wedding, or a massive corporate summit, our team of dedicated experts will handle the logistics, design, and coordination. Our platform seamlessly connects clients with a curated network of top-tier vendors to ensure that every aspect of your event—from catering to decor to entertainment—is flawlessly executed. At Event Nest, we don't just plan events; we architect unforgettable experiences.
+        </p>
+      </div>
+      <div class="who-img">
+        <img src="https://catholictt.org/wp-content/uploads/2018/08/who-are-we.jpg" alt="Who we are">
+      </div>
+    </section>
+
+    <section class="mv">
+      <h2>Our Mission & Vision</h2>
+      <div class="mv-cards">
+        <div class="mv-card mission">
+          <h3>🎯 Our Mission</h3>
+          <ul>
+            <li>Simplify event planning</li>
+            <li>Connect users with reliable vendors</li>
+            <li>Deliver stress-free experiences</li>
+          </ul>
+        </div>
+
+        <div class="mv-card vision">
+          <h3>👁️ Our Vision</h3>
+          <ul>
+            <li>Become a trusted event platform</li>
+            <li>Support all types of celebrations</li>
+            <li>Create joyful memories</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="why-choose">
+      <div class="why-choose-inner">
+        <h2>Why Choose Us</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <img src="https://img.icons8.com/?size=100&id=119703&format=png&color=000000" alt="">
+            <h4>Personalized Event Planning</h4>
+            <p>We tailor every detail to your unique vision and style.</p>
+          </div>
+          <div class="feature-card">
+            <img src="https://img.icons8.com/?size=100&id=R1kC9AoaoQgQ&format=png&color=000000" alt="">
+            <h4>Free Expert Consultation</h4>
+            <p>Get professional advice with absolutely no obligations.</p>
+          </div>
+          <div class="feature-card">
+            <img src="https://img.icons8.com/?size=100&id=HNZ1FY24twH0&format=png&color=000000" alt="">
+            <h4>Budget-Friendly Packages</h4>
+            <p>Transparent pricing that fits exactly within your budget.</p>
+          </div>
+          <div class="feature-card">
+            <img src="https://img.icons8.com/?size=100&id=0Z2th4OTrTEb&format=png&color=000000" alt="">
+            <h4>Custom Themes & Decorations</h4>
+            <p>Stunning setups designed to match your event theme perfectly.</p>
+          </div>
+          <div class="feature-card">
+            <img src="https://img.icons8.com/?size=100&id=q0w1mrR0Iafp&format=png&color=FAB005" alt="">
+            <h4>Trusted Vendors</h4>
+            <p>Collaborating only with the best professionals in the industry.</p>
+          </div>
+          <div class="feature-card">
+            <img src="https://img.icons8.com/?size=100&id=119693&format=png&color=000000" alt="">
+            <h4>On-Time Execution</h4>
+            <p>Flawless management to ensure everything runs on schedule.</p>
+          </div>
+        </div>
+
+        <div class="extra-benefits">
+          <h3>Extra Benefits for Booking With Us!</h3>
+          <div class="benefit-items">
+            <div class="benefit-item">
+              <div class="benefit-icon-wrapper">
+                <img src="https://img.icons8.com/?size=100&id=ooWxwd8jnXUw&format=png&color=000000" alt="">
+              </div>
+              <span>Free Event Offers</span>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon-wrapper">
+                <img src="https://img.icons8.com/?size=100&id=woMC0BA8mqBt&format=png&color=000000" alt="">
+              </div>
+              <span>24/7 Support</span>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon-wrapper">
+                <img src="https://img.icons8.com/?size=100&id=u-_QrjX9qIwV&format=png&color=000000" alt="">
+              </div>
+              <span>Flexible Payment</span>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon-wrapper">
+                <img src="https://img.icons8.com/?size=100&id=81288&format=png&color=000000" alt="">
+              </div>
+              <span>Free Theme Service</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="team">
+      <h2>Meet The Team</h2>
+      <div class="team-cards">
+        <div class="member">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjI6wK2tGyTm0i11ZgMf0ulzThqJcCkU04W4dTbJAoZjWnBddFeDse1e9uZIcixevZwOmd4eeI5P3OoyRm881hBG645NMmQUFg_WsR5RSVB6lLtuvUrrxdjasu9csL-MVwrrCuSFD1lUmH96JbLWOnJQM7VM0r4uEnZSSzZ_6ARyxUMeqm73jLZBkDs98U/s320/667cdb94-29a8-4ac9-bc16-4284ebb03a1c.jpeg" alt="Meena">
+          <h4>MEENA KOTA</h4>
+          <p>Project Lead</p>
+        </div>
+        <div class="member">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2SIm9Pnt6ttU7I7PcRGyW8ClDIVNKIGPiBGah-tfAHWZO2tSwNV4NWGBse2D7TMbCQ6qzyJTWxAFwuRN6NQ_w3emAl_heaYBCDiQatPuwUADIV6MQhKwrizsKSwri7xKpIm5GJxahe_cw4nEePEcz3-j_XcqO0rsepwIL2XS9xHrv_1_hJqvv4VAbyQI/s320/WhatsApp%20Image%202025-12-22%20at%2011.01.55%20AM.jpeg" alt="Vinay">    
+          <h4>VINAY KUMAR</h4>
+          <p>Lead Planner</p>
+        </div>
+        <div class="member">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhwjzuTB3i46o6wa2ZdhrHIgEoagC76t_sErd0af8C7L1esK90luoHDQmgoMseAYsttqQ_FIpda5etk9_nq0sJGnsSFeIkcOCeQhtU1_WAWPgPc2_JrhtamleAnn4AZC7o9K9GUlzXGSj3969Iphk8UVuOiEK06PQP8D1Hv3iFwL1YjgU7C7qsBvIr_IJU/s320/WhatsApp%20Image%202026-01-08%20at%209.24.51%20PM.jpeg" alt="Kalyani">    
+          <h4>KALYANI</h4>
+          <p>Event Designer</p>
+        </div>
+        <div class="member">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhchiK872CQsRMrhwdbR26rIKqXw7nZUtdyO5JDU2CyIrs7DGwjKCBR9igF1hT5o9LCvUu6jMyhuEvfhZ3rzIUFCA_ysxXRD8lg_nphfprb1PuqX2c3Xek5uLFmjqDFvO-81QWE5g_bfmVdq0gdpTDaNiWa04D33HsqlF3JbW1Xj5Y1wm40ZfB_AQOKXK0/s320/WhatsApp%20Image%202025-12-22%20at%2011.56.50%20AM.jpeg" alt="Shanmukh"> 
+          <h4>SHANMUKH</h4>
+          <p>Coordinator</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Location Section -->
+    <section class="location">
+      <h2>Our Location</h2>
+      <div class="location-inner">
+        <div class="location-text">
+          <h3>Visit Our Office</h3>
+          <p>We'd love to meet you in person to discuss your upcoming event, walk through our design catalogs, and share a cup of coffee. Drop by our headquarters during standard business hours.</p>
+          <div class="address-details">
+            <div class="detail-item">
+              <i class="fa-solid fa-location-dot"></i>
+              <div class="detail-text">
+                <b>Event Nest Headquarters</b>
+                Level 4, CMR College Building<br>
+                Medchal District, 501401<br>
+                Telangana, India
+              </div>
+            </div>
+            <div class="detail-item">
+              <i class="fa-solid fa-clock"></i>
+              <div class="detail-text">
+                <b>Business Hours</b>
+                Monday - Friday<br>
+                9:00 AM - 6:00 PM
+              </div>
+            </div>
+          </div>
+
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="cta-inner">
+        <h2>Ready to plan your next event with us?</h2>
+        <button><a href="{{ url_for('user_services') }}">Plan Your Event</a></button>
+      </div>
+    </section>
+
+    <!-- Custom Request Section -->
+    <section class="custom-request">
+      <div class="custom-request-inner">
+        <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Custom Request</h2>
+        <form class="request-form">
+          <div class="form-group">
+            <select class="form-control" id="eventType" required>
+              <option value="">Select Event Type</option>
+              <option value="wedding">Wedding</option>
+              <option value="birthday">Birthday</option>
+              <option value="anniversary">Anniversary</option>
+              <option value="babyshower">Baby Shower</option>
+              <option value="corporate">Corporate Event</option>
+              <option value="party">Party</option>
+              <option value="cultural">Cultural Event</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <input type="email" class="form-control" id="email" placeholder="Your Email Address" value="{{ user.email }}" required>
+          </div>
+          <div class="form-group">
+            <input type="tel" class="form-control" id="phone" placeholder="Your Phone Number" required>
+          </div>
+          <div class="form-group">
+            <textarea class="form-control" id="requirements" placeholder="Tell us your specific requirements..." rows="6" required></textarea>
+          </div>
+          <button type="submit" class="submit-btn">Submit Inquiry</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="reviews-section">
+      <div class="reviews-inner">
+        <h2><i class="fa-solid fa-comments"></i> Reviews</h2>
+        <div class="reviews-grid">
+          <div class="review-card">
+            <p class="review-text">"Found the perfect DJ for my party within 5 minutes. Excellent service!"</p>
+            <div class="review-rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-value">5.0</span>
+            </div>
+          </div>
+          <div class="review-card">
+            <p class="review-text">"EventNest made my wedding planning so stress-free. Highly recommended!"</p>
+            <div class="review-rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-value">5.0</span>
+            </div>
+          </div>
+          <div class="review-card">
+            <p class="review-text">"Amazing vendors and professional coordination. My event was perfect!"</p>
+            <div class="review-rating">
+              <span class="stars">★★★★☆</span>
+              <span class="rating-value">4.5</span>
+            </div>
+          </div>
+          <div class="review-card">
+            <p class="review-text">"Great experience! The team was very supportive and responsive throughout."</p>
+            <div class="review-rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-value">5.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+    <!-- Footer -->
+    <footer class="hidden">
+      <div class="footer-col">
+        <h4 class="act"><i class="fa-solid fa-location-dot"></i> Address</h4>
+        <p>
+          <b>CMR College</b><br />
+          Medchal District<br />
+          Pin-code: 501401<br />
+          Telangana, India
+        </p>
+        <a href="https://maps.google.com" target="_blank" class="map-link">
+          Get Directions <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="footer-col end">
+        <h4 class="act">Explore</h4>
+        <ul class="footer-links">
+          <li>
+            <a href="{{ url_for('user_services') }}">Our Services</a>
+          </li>
+          <li>
+            <a href="{{ url_for('user_gallery') }}">Event Gallery</a>
+          </li>
+          <li><a href="{{ url_for('user_about') }}">About Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col end">
+        <h4 class="act">Contact</h4>
+        <p><i class="fa-solid fa-phone"></i> 09343489432</p>
+        <p><i class="fa-brands fa-whatsapp"></i> +91 9999999999</p>
+        <p><i class="fa-solid fa-envelope"></i> info@eventnest.com</p>
+
+        <div class="legal-links">
+          <a href="#">Privacy Policy</a> | <a href="#">Terms</a>
+        </div>
+      </div>
+
+      <div class="footer-col" id="last">
+        <h4 class="act">Follow Us</h4>
+        <div class="social-icons">
+          <a href="https://www.facebook.com"
+            ><i class="fa-brands fa-facebook-f"></i
+          ></a>
+          <a href="https://www.linkedin.com"
+            ><i class="fa-brands fa-linkedin-in"></i
+          ></a>
+          <a href="https://www.github.com"
+            ><i class="fa-brands fa-github"></i
+          ></a>
+          <a href="https://www.instagram.com"
+            ><i class="fa-brands fa-instagram"></i
+          ></a>
+        </div>
+
+        <p class="copyright">
+          ©2035 by Event Nest. <br />
+          Powered and secured by FireWall
+        </p>
+
+        <button id="down">
+          <a href="{{ url_for('user_services') }}" id="no">BOOK NOW</a>
+        </button>
+      </div>
+    </footer>
+
+  <!-- WISHLIST MODAL -->
+  <div class="modal-overlay" id="wishlistOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+    <div class="modal-box" style="background:white; border-radius:12px; max-width:600px; width:90%; max-height:80vh; overflow-y:auto; padding:30px; box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+      <div class="modal-head" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:15px;">
+        <div>
+          <div class="modal-pkg-label" style="color:var(--teal); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:1px;">❤️ MY WISHLIST</div>
+          <div class="modal-pkg-name" id="wishlistTitle" style="font-size:24px; font-weight:700; color:var(--ink); margin-top:4px;">Saved Vendors</div>
+        </div>
+        <button class="modal-close" onclick="closeWishlistModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#999;">&times;</button>
+      </div>
+      <div class="modal-body" id="wishlistBody">
+        <!-- Wishlist items will be rendered here -->
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/user/sigup_script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/user/about_logic.js', v='1.5') }}"></script>
+</body>
+</html>

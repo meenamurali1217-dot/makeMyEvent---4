@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vendor Profile | Event Nest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vendor/profile.css', v='1.3') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="navbar">
+    
+    <!-- Header -->
+        <div class="logo">
+          make
+          <img
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
+            alt=""
+            class="image"
+          />
+          event
+        </div>
+
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search...">
+    </div>
+
+    <nav class="desktop-nav">
+      <a href="{{ url_for('vendor_dashboard') }}" class="option">Dashboard</a>
+      <a href="{{ url_for('vendor_services') }}" class="option">My Services</a>
+      <a href="{{ url_for('vendor_earnings') }}" class="option">Earnings</a>
+      <a href="{{ url_for('vendor_messages') }}" class="option">Messages</a>
+      <a href="{{ url_for('vendor_profile') }}" class="option" style="color:#2196f3;">Profile</a>
+      <a href="{{ url_for('change_password') }}" class="option">Change Password</a>
+    </nav>
+    <!-- Notification Bell -->
+    <div class="icon-btn" onclick="toggleNotificationDropdown(event)" style="position: relative; margin-right: 15px; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 5px; color: inherit;">
+        🔔 <span style="font-weight: 500;">Notifications <span id="notification-badge" style="display: none; background: #ef4444; color: white; border-radius: 50%; padding: 1px 6px; font-size: 10px; font-weight: bold; margin-left: 2px;"></span></span>
+        
+        <!-- Notification Dropdown -->
+        <div id="notificationDropdown" class="user-dropdown" style="display: none; width: 320px; padding: 10px 0; right: 0; top: 40px; text-align: left; max-height: 400px; overflow: hidden; flex-direction: column; position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000;">
+            <div style="padding: 5px 15px 10px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 14px; color: #1e293b;">Recent Alerts</span>
+                <span onclick="markVendorNotificationsAsRead(event)" style="font-size: 12px; color: #2196f3; cursor: pointer; font-weight: normal;">Mark all read</span>
+            </div>
+            <div id="notificationDropdownList" style="max-height: 280px; overflow-y: auto; padding: 5px 0;">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="auth">
+      <button class="register" style="background-color: #333;" onclick="location.href='/logout'"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
+
+  <main class="admin-container">
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div style="padding: 15px; margin-bottom: 20px; border-radius: 4px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <div class="profile-header-wrapper">
+          <div class="cover-photo-container">
+              <img src="{{ profile.cover_image or 'https://img.freepik.com/premium-photo/wedding-beach-with-sunset-background_853645-878.jpg?w=740' }}" alt="Cover Photo" class="cover-img">
+              <button class="edit-cover-btn" onclick="openEditModal()"><i class="fa-solid fa-camera"></i> Edit Cover</button>
+          </div>
+
+          <div class="profile-info-bar">
+              <div class="profile-left-info">
+                  <div class="profile-pic-wrapper" onclick="openEditModal()" style="cursor: pointer;">
+                      <img src="{{ profile.image_url or url_for('static', filename='images/default_avatar.svg') }}" alt="Vendor Logo">
+                      <div class="edit-pic-overlay"><i class="fa-solid fa-camera"></i></div>
+                  </div>
+                  <div class="profile-text">
+                      <div class="name-row">
+                          <h1>{{ profile.business_name }}</h1>
+                          <i class="fa-solid fa-circle-check" style="color: #3b82f6;" title="Verified Vendor"></i>
+                      </div>
+                      <p class="location"><i class="fa-solid fa-location-dot"></i> {{ profile.city or 'N/A' }} • Member since 2026</p>
+                  </div>
+              </div>
+              
+              <div class="profile-actions">
+                  <button class="glass-btn primary" onclick="openEditModal()"><i class="fa-solid fa-pen"></i> Edit Profile</button>
+                  <button class="glass-btn"><i class="fa-solid fa-share-nodes"></i> Share</button>
+              </div>
+          </div>
+      </div>
+
+      <div class="profile-layout-grid">
+          
+          <div class="col-left">
+              
+              <div class="card info-card">
+                  <div class="card-header">
+                      <h3>About Business</h3>
+                  </div>
+                  <div class="card-body editable-area" contenteditable="false">
+                      <p>{{ profile.description or 'No description provided.' }}</p>
+                      <ul class="highlights">
+                          <li><i class="fa-solid fa-check-circle"></i> Service Category: {{ profile.service_category }}</li>
+                          <li><i class="fa-solid fa-check-circle"></i> Availability Status: {{ profile.availability|capitalize }}</li>
+                      </ul>
+                  </div>
+              </div>
+
+              <div class="card info-card">
+                  <div class="card-header">
+                      <h3>Contact Info</h3>
+                  </div>
+                  <div class="contact-list">
+                      <div class="c-item">
+                          <i class="fa-solid fa-phone"></i>
+                          <div>
+                              <small>Username</small>
+                              <span>{{ profile.username }}</span>
+                          </div>
+                      </div>
+                      <div class="c-item">
+                          <i class="fa-solid fa-envelope"></i>
+                          <div>
+                              <small>Email</small>
+                              <span>{{ profile.email }}</span>
+                          </div>
+                      </div>
+                      <div class="c-item">
+                          <i class="fa-solid fa-location-dot"></i>
+                          <div>
+                              <small>Location Details</small>
+                              <span>{{ profile.location or 'Not specified' }}</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="card info-card">
+                  <div class="card-header">
+                      <h3>Social Media</h3>
+                  </div>
+                  <div class="social-links">
+                      <a href="https://www.instagram.com" class="s-icon insta"><i class="fa-brands fa-instagram"></i></a>
+                      <a href="https://www.facebook.com" class="s-icon fb"><i class="fa-brands fa-facebook"></i></a>
+                      <a href="https://www.twitter.com" class="s-icon tw"><i class="fa-brands fa-twitter"></i></a>
+                      <a href="https://www.youtube.com" class="s-icon yt"><i class="fa-brands fa-youtube"></i></a>
+                  </div>
+              </div>
+
+          </div>
+
+          <div class="col-right">
+              
+              <div class="mini-stats-row">
+                  <div class="m-stat">
+                      <strong>{{ profile.rating }}</strong>
+                      <span>Rating</span>
+                  </div>
+                  <div class="m-stat">
+                      <strong>{{ profile.review_count }}</strong>
+                      <span>Reviews</span>
+                  </div>
+                  <div class="m-stat">
+                      <strong>{{ services|length }}</strong>
+                      <span>Active Services</span>
+                  </div>
+              </div>
+
+              <div class="card services-card">
+                  <div class="card-header">
+                      <h3>Services & Pricing</h3>
+                      <button class="icon-btn-bordered" onclick="location.href='{{ url_for('vendor_services') }}'"><i class="fa-solid fa-pen-to-square"></i></button>
+                  </div>
+                  <div class="table-responsive">
+                      <table class="simple-table">
+                          <thead>
+                              <tr>
+                                  <th>Service Name</th>
+                                  <th>Description</th>
+                                  <th>Price Range</th>
+                                  <th>Status</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {% for s in services %}
+                              <tr>
+                                  <td>{{ s.name }}</td>
+                                  <td>{{ s.description }}</td>
+                                  <td>{{ s.price_label }}</td>
+                                  <td><span class="status-badge active">{{ s.status }}</span></td>
+                              </tr>
+                              {% else %}
+                              <tr>
+                                  <td colspan="4" style="text-align: center; color:#666; padding:10px;">No services listed yet.</td>
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+
+          </div>
+
+      </div>
+
+  </main>
+
+  <div id="editProfileModal" class="modal-overlay" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
+      <div style="background: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: #333;">
+              <h2>Edit Profile Details</h2>
+              <span style="font-size: 24px; cursor: pointer;" onclick="closeEditModal()">✖</span>
+          </div>
+          <form action="{{ url_for('vendor_profile') }}" method="POST" enctype="multipart/form-data">
+              <div style="margin-bottom: 15px;">
+                  <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #555;">Business Name</label>
+                  <input type="text" name="business_name" value="{{ profile.business_name }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" required>
+              </div>
+              <div style="margin-bottom: 15px;">
+                  <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #555;">Service Category</label>
+                  <select name="service_category" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                      <option value="Decoration" {% if profile.service_category == 'Decoration' %}selected{% endif %}>Decoration</option>
+                      <option value="Catering" {% if profile.service_category == 'Catering' %}selected{% endif %}>Catering</option>
+                      <option value="Photography" {% if profile.service_category == 'Photography' %}selected{% endif %}>Photography</option>
+                      <option value="Music/DJ" {% if profile.service_category == 'Music/DJ' %}selected{% endif %}>Music/DJ</option>
+                      <option value="Makeup Artist" {% if profile.service_category == 'Makeup Artist' %}selected{% endif %}>Makeup Artist</option>
+                  </select>
+              </div>
+              <div style="margin-bottom: 15px;">
+                  <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #555;">City</label>
+                  <input type="text" name="city" value="{{ profile.city or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+              </div>
+              <div style="margin-bottom: 15px;">
+                  <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #555;">Location</label>
+                  <input type="text" name="location" value="{{ profile.location or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+              </div>
+              <div style="margin-bottom: 15px;">
+                  <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #555;">Description</label>
+                  <textarea name="description" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">{{ profile.description or '' }}</textarea>
+              </div>
+              <div style="margin-bottom: 15px;">
+                  <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #555;">Availability</label>
+                  <select name="availability" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                      <option value="available" {% if profile.availability == 'available' %}selected{% endif %}>Available</option>
+                      <option value="busy" {% if profile.availability == 'busy' %}selected{% endif %}>Busy</option>
+                  </select>
+              </div>
+              <div style="margin-bottom: 15px;">
+                  <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #555;">Profile Picture / Logo</label>
+                  <input type="file" name="image_url" accept="image/*" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+              </div>
+              <div style="margin-bottom: 15px;">
+                  <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #555;">Cover Photo</label>
+                  <input type="file" name="cover_image" accept="image/*" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+              </div>
+              <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                  <button type="button" onclick="closeEditModal()" style="padding: 10px 15px; border: 1px solid #ccc; background: #eee; border-radius: 4px; cursor: pointer;">Cancel</button>
+                  <button type="submit" style="padding: 10px 15px; background: #2196f3; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Changes</button>
+              </div>
+          </form>
+      </div>
+  </div>
+
+  <footer>
+        <div class="footer-col">
+            CMR college <br>  
+            Kandlakoya<br>
+            Medchel Telangana
+        </div>
+        <div class="footer-col end">
+            Tel: 08965436 <br>
+            Ph.no:91 8976564390<br>
+            info@eventnest.com
+        </div>
+        <div class="footer-col end">
+            ©2035 by EventNest. <br>
+            Powered and secured by FireWall
+        </div>
+        <div class="footer-col" id="last">
+            <div class="social-icons">
+                <a href="https://www.facebook.com"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://www.github.com"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.instagram.com"><i class="fa-brands fa-instagram"></i></a>
+            </div> 
+            <br>
+            <button id="down"><a href="{{ url_for('vendor_booking') }}" id="no">Bookings</a></button>
+        </div>
+    </footer>
+
+  <script src="{{ url_for('static', filename='js/shared-utils.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/vendor/profile.js') }}"></script>
+  <script>
+    function openEditModal() {
+        document.getElementById('editProfileModal').style.display = 'flex';
+    }
+    function closeEditModal() {
+        document.getElementById('editProfileModal').style.display = 'none';
+    }
+  </script>
+  <script src="{{ url_for('static', filename='js/vendor/vendor_script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Vendors | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/vendormanagement.css', v='1.3') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="navbar">
+    
+    <!-- Header -->
+        <div class="logo">
+          make
+          <img
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
+            alt=""
+            class="image"
+          />
+          event
+        </div>
+
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="vendorSearch" placeholder="Search vendor name, ID or city..." onkeyup="searchTable()">
+    </div>
+
+    <nav class="desktop-nav">
+      <a href="{{ url_for('admin_dashboard') }}" class="option">Dashboard</a>
+      <a href="{{ url_for('admin_vendors') }}" class="option" style="color:#2196f3;">Vendors</a>
+      <a href="{{ url_for('admin_users') }}" class="option">Users</a>
+      <a href="{{ url_for('admin_bookings') }}" class="option">Booking</a>
+      <a href="{{ url_for('change_password') }}" class="option">Change Password</a>
+    </nav>
+    
+    <div class="auth">
+      <button class="register" style="background-color: #333;" onclick="location.href='/logout'"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
+
+  <main class="admin-container">
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category if category != 'error' else 'danger' }}" style="padding: 15px; margin-bottom: 20px; border-radius: 8px; font-weight: 500; font-size: 14px; display: flex; align-items: center; gap: 10px;
+              {% if category == 'error' or category == 'danger' %}
+                background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;
+              {% elif category == 'warning' %}
+                background-color: #ffedd5; color: #c2410c; border: 1px solid #fdbb2d;
+              {% else %}
+                background-color: #dcfce7; color: #166534; border: 1px solid #86efac;
+              {% endif %}">
+              {% if category == 'error' or category == 'danger' %}
+                <i class="fa-solid fa-circle-exclamation"></i>
+              {% elif category == 'warning' %}
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              {% else %}
+                <i class="fa-solid fa-circle-check"></i>
+              {% endif %}
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <div class="admin-header">
+          <div>
+              <h1>Vendor Management</h1>
+              <p>View, approve, and manage all service providers on the platform.</p>
+          </div>
+          <button class="primary-btn theme-btn" onclick="openVendorModal()"><i class="fa-solid fa-plus"></i> Add New Vendor</button>
+      </div>
+
+      <section class="stats-row">
+          <div class="stat-card">
+              <div class="stat-icon blue"><i class="fa-solid fa-shop"></i></div>
+              <div class="stat-info">
+                  <h3>{{ vendors|length }}</h3>
+                  <p>Total Vendors</p>
+              </div>
+          </div>
+          <div class="stat-card">
+              <div class="stat-icon green"><i class="fa-solid fa-check-circle"></i></div>
+              <div class="stat-info">
+                  <h3>{{ vendors|selectattr('status', 'equalto', 'approved')|list|length }}</h3>
+                  <p>Active & Verified</p>
+              </div>
+          </div>
+          <div class="stat-card">
+              <div class="stat-icon orange"><i class="fa-solid fa-hourglass-half"></i></div>
+              <div class="stat-info">
+                  <h3>{{ pending_requests|length }}</h3>
+                  <p>Pending Approval</p>
+              </div>
+          </div>
+          <div class="stat-card">
+              <div class="stat-icon purple"><i class="fa-solid fa-ban"></i></div>
+              <div class="stat-info">
+                  <h3>{{ vendors|selectattr('status', 'equalto', 'suspended')|list|length }}</h3>
+                  <p>Suspended/Blocked</p>
+              </div>
+          </div>
+      </section>
+
+      <section class="vendor-table-section">
+          
+          <div class="card table-card full-width-card">
+              <div class="card-header">
+                  <h2>Registered Vendors List</h2>
+                  
+                  <div class="table-actions">
+                      <select class="filter-select">
+                          <option>All Categories</option>
+                          <option>Catering</option>
+                          <option>Photography</option>
+                          <option>Decoration</option>
+                      </select>
+                      <select class="filter-select">
+                          <option>Status: Any</option>
+                          <option>Active</option>
+                          <option>Pending</option>
+                          <option>Blocked</option>
+                      </select>
+                      <button class="icon-btn-bordered" title="Filter"><i class="fa-solid fa-filter"></i></button>
+                      <button class="icon-btn-bordered" title="Export CSV"><i class="fa-solid fa-download"></i> Export</button>
+                  </div>
+              </div>
+
+              <div class="table-responsive">
+                  <table id="vendorTable">
+                      <thead>
+                          <tr>
+                              <th>Vendor Info</th>
+                              <th>Category</th>
+                              <th>Location</th>
+                              <th>Rating</th>
+                              <th>Status</th>
+                              <th>Actions</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <!-- Pending Registration Requests -->
+                          {% for r in pending_requests %}
+                          <tr>
+                              <td>
+                                  <div class="vendor-cell">
+                                      <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=100&auto=format&fit=crop" alt="Vendor">
+                                      <div>
+                                          <strong>{{ r.business_name }}</strong><br>
+                                          <small>Req ID: #REQ-{{ r.request_id }} ({{ r.full_name }})</small>
+                                      </div>
+                                  </div>
+                              </td>
+                              <td>{{ r.service_type }}</td>
+                              <td>{{ r.city }}</td>
+                              <td><span class="star-rating text-gray">N/A</span></td>
+                              <td><span class="status pending">Pending</span></td>
+                              <td>
+                                  <div class="action-buttons">
+                                      <button class="icon-btn approve" title="Approve" type="button" onclick="openApproveModal('{{ r.request_id }}', '{{ r.full_name|escape }}', '{{ r.email|escape }}', '{{ r.phone|escape }}', '{{ r.business_name|escape }}')"><i class="fa-solid fa-check"></i></button>
+                                      <button class="icon-btn delete" title="Reject"><i class="fa-solid fa-trash"></i></button>
+                                  </div>
+                              </td>
+                          </tr>
+                          {% endfor %}
+
+                          <!-- Approved Vendors -->
+                          {% for v in vendors %}
+                          <tr>
+                              <td>
+                                  <div class="vendor-cell">
+                                      <img src="{{ v.image_url or 'https://st5.depositphotos.com/2760050/74592/i/450/depositphotos_745925384-stock-photo-businessman-portrait-outdoor-smiling-mature.jpg' }}" alt="Vendor">
+                                      <div>
+                                          <strong>{{ v.business_name }}</strong><br>
+                                          <small>ID: #V-{{ v.vendor_id }} ({{ v.username }})</small>
+                                      </div>
+                                  </div>
+                              </td>
+                              <td>{{ v.service_category }}</td>
+                              <td>{{ v.city }}</td>
+                              <td><span class="star-rating"><i class="fa-solid fa-star"></i> 4.8</span></td>
+                              <td>
+                                  {% if v.status == 'suspended' %}
+                                  <span class="status canceled" style="text-transform: capitalize;">{{ v.status }}</span>
+                                  {% else %}
+                                  <span class="status completed" style="text-transform: capitalize;">{{ v.status }}</span>
+                                  {% endif %}
+                              </td>
+                              <td>
+                                  <div class="action-buttons">
+                                      <button class="icon-btn edit" title="Edit"
+                                              data-id="{{ v.vendor_id }}"
+                                              data-business-name="{{ (v.business_name or '')|escape }}"
+                                              data-email="{{ (v.email or '')|escape }}"
+                                              data-contact="{{ (v.contact or '')|escape }}"
+                                              data-category="{{ (v.service_category or '')|escape }}"
+                                              data-city="{{ (v.city or '')|escape }}"
+                                              data-location="{{ (v.location or '')|escape }}"
+                                              data-description="{{ (v.description or '')|escape }}"
+                                              data-price-from="{{ (v.price_from or '')|escape }}"
+                                              data-image-url="{{ (v.image_url or '')|escape }}"
+                                              onclick="openEditVendorModal(this)">
+                                          <i class="fa-solid fa-pen"></i>
+                                      </button>
+                                      {% if v.status == 'suspended' %}
+                                      <button class="icon-btn approve" title="Activate" onclick="toggleVendorStatus(this, '{{ v.vendor_id }}')"><i class="fa-solid fa-unlock"></i></button>
+                                      {% else %}
+                                      <button class="icon-btn delete" title="Suspend" onclick="toggleVendorStatus(this, '{{ v.vendor_id }}')"><i class="fa-solid fa-ban"></i></button>
+                                      {% endif %}
+                                  </div>
+                              </td>
+                          </tr>
+                          {% endfor %}
+                      </tbody>
+                  </table>
+              </div>
+              
+              <div class="table-footer">
+                  <p>Showing 1 to {{ vendors|length + pending_requests|length }} entries</p>
+                  <div class="pagination">
+                      <button>Previous</button>
+                      <button class="active">1</button>
+                      <button>Next</button>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+  </main>
+
+  <div id="vendor-modal" class="modal-overlay">
+      <div class="modal-card">
+          <div class="modal-header">
+              <h2><i class="fa-solid fa-store"></i> Add New Vendor</h2>
+              <span class="close-modal-btn" onclick="closeVendorModal()">&times;</span>
+          </div>
+          
+          <form id="add-vendor-form">
+              <div class="form-grid">
+                  <div class="form-group full-width">
+                      <label>Business Name</label>
+                      <input type="text" id="v-name" placeholder="e.g. Elite Catering Services" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label>Service Category</label>
+                      <select id="v-category" required>
+                          <option value="">Select Category</option>
+                          <option value="Catering">Catering</option>
+                          <option value="Decoration">Decoration</option>
+                          <option value="Photography">Photography</option>
+                          <option value="Venue">Venue</option>
+                          <option value="Entertainment">Entertainment</option>
+                      </select>
+                  </div>
+
+                  <div class="form-group">
+                      <label>City / Location</label>
+                      <input type="text" id="v-location" placeholder="e.g. Mumbai" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label>Starting Price (₹)</label>
+                      <input type="number" placeholder="e.g. 50000" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label>Contact Number</label>
+                      <input type="tel" placeholder="+91 99999 99999" required>
+                  </div>
+
+                  <div class="form-group full-width">
+                      <label>Vendor Logo / Image</label>
+                      <div class="file-upload-wrapper">
+                          <input type="file" id="vendor-img-input" accept="image/*" onchange="previewSingleImage()">
+                          <div class="upload-box">
+                              <i class="fa-solid fa-cloud-arrow-up"></i>
+                              <p>Click to upload image</p>
+                          </div>
+                      </div>
+                      <div id="image-preview-container" class="preview-grid"></div>
+                  </div>
+              </div>
+
+              <div class="modal-footer">
+                  <button type="button" class="btn-cancel" onclick="closeVendorModal()">Cancel</button>
+                  <button type="submit" class="btn-save">Add Vendor</button>
+              </div>
+          </form>
+      </div>
+  </div>
+
+  <!-- Approve Vendor Modal -->
+  <div id="approve-vendor-modal" class="modal-overlay">
+      <div class="modal-card">
+          <div class="modal-header">
+              <h2><i class="fa-solid fa-user-check"></i> Approve Vendor & Create Login Credentials</h2>
+              <span class="close-modal-btn" onclick="closeApproveModal()">&times;</span>
+          </div>
+          
+          <form id="approve-vendor-form" method="POST">
+              <div class="form-grid">
+                  <div class="form-group full-width">
+                      <label>Business Name</label>
+                      <input type="text" id="approve-business-name" readonly style="background-color: #e2e8f0; cursor: not-allowed;">
+                  </div>
+
+                  <div class="form-group">
+                      <label>Username / Contact Person Name</label>
+                      <input type="text" name="username" id="approve-username" placeholder="Full name of contact person" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label>Email Address</label>
+                      <input type="email" name="email" id="approve-email" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label>Contact Phone</label>
+                      <input type="tel" name="contact" id="approve-contact" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label>Temporary Login Password</label>
+                      <input type="text" name="password" id="approve-password" placeholder="Create login password" required>
+                  </div>
+              </div>
+
+              <div class="modal-footer">
+                  <button type="button" class="btn-cancel" onclick="closeApproveModal()">Cancel</button>
+                  <button type="submit" class="btn-save">Approve & Send Credentials</button>
+              </div>
+          </form>
+      </div>
+  </div>
+
+  <!-- Edit Vendor Modal -->
+  <div id="edit-vendor-modal" class="modal-overlay">
+      <div class="modal-card">
+          <div class="modal-header">
+              <h2><i class="fa-solid fa-pen-to-square"></i> Edit Vendor Profile</h2>
+              <span class="close-modal-btn" onclick="closeEditVendorModal()">&times;</span>
+          </div>
+          
+          <form id="edit-vendor-form" method="POST" enctype="multipart/form-data">
+              <div class="form-grid">
+                  <div class="form-group full-width">
+                      <label>Business Name</label>
+                      <input type="text" name="business_name" id="edit-business-name" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label>Email Address</label>
+                      <input type="email" name="email" id="edit-email" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label>Contact Phone</label>
+                      <input type="tel" name="contact" id="edit-contact" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label>Service Category</label>
+                      <input type="text" name="service_category" id="edit-service-category" placeholder="e.g. Photography" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label>City</label>
+                      <input type="text" name="city" id="edit-city" required>
+                  </div>
+
+                  <div class="form-group full-width">
+                      <label>Detailed Location / Address</label>
+                      <input type="text" name="location" id="edit-location" placeholder="e.g. Banjara Hills, Hyderabad">
+                  </div>
+
+                  <div class="form-group">
+                      <label>Starting Price (₹)</label>
+                      <input type="text" name="price_from" id="edit-price-from" placeholder="e.g. 50,000">
+                  </div>
+
+                  <div class="form-group full-width">
+                      <label>Description</label>
+                      <textarea name="description" id="edit-description" rows="3" style="width: 100%; padding: 12px 15px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; background: #f8fafc; resize: vertical; font-family: inherit;"></textarea>
+                  </div>
+
+                  <div class="form-group full-width">
+                      <label>Vendor Logo / Image</label>
+                      <div class="file-upload-wrapper">
+                          <input type="file" name="image" id="edit-vendor-img-input" accept="image/*" onchange="previewEditImage()">
+                          <div class="upload-box">
+                              <i class="fa-solid fa-cloud-arrow-up"></i>
+                              <p>Click to upload new image</p>
+                          </div>
+                      </div>
+                      <div id="edit-image-preview-container" class="preview-grid" style="margin-top:10px;"></div>
+                  </div>
+              </div>
+
+              <div class="modal-footer">
+                  <button type="button" class="btn-cancel" onclick="closeEditVendorModal()">Cancel</button>
+                  <button type="submit" class="btn-save">Save Changes</button>
+              </div>
+          </form>
+      </div>
+  </div>
+
+  <footer>
+        <div class="footer-col">
+            CMR college <br>  
+            Kandlakoya<br>
+            Medchel Telangana
+        </div>
+        <div class="footer-col end">
+            Tel: 08965436 <br>
+            Ph.no:91 8976564390<br>
+            info@eventnest.com
+        </div>
+        <div class="footer-col end">
+            ©2035 by EventNest. <br>
+            Powered and secured by FireWall
+        </div>
+        <div class="footer-col" id="last">
+            <div class="social-icons">
+                <a href="https://www.facebook.com"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://github.com"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.instagram.com"><i class="fa-brands fa-instagram"></i></a>
+            </div> 
+            <br>
+            <button id="down"><a href="{{ url_for('admin_bookings') }}" id="no">Bookings</a></button>
+        </div>
+    </footer>
+
+  <script src="{{ url_for('static', filename='js/admin/vendormanagement.js') }}"></script>
+</body>
+</html>

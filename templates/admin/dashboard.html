@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard | Event Nest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style.css', v='1.3') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+  <header class="navbar">
+    
+     <!-- Header -->
+        <div class="logo">
+          make
+          <img
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
+            alt=""
+            class="image"
+          />
+          event
+        </div>
+
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search system data...">
+    </div>
+
+    <nav class="desktop-nav">
+      <a href="{{ url_for('admin_dashboard') }}" class="option" style="color:#2196f3;">Dashboard</a>
+      <a href="{{ url_for('admin_vendors') }}" class="option">Vendors</a>
+      <a href="{{ url_for('admin_users') }}" class="option">Users</a>
+      <a href="{{ url_for('admin_bookings') }}" class="option">Booking</a>
+      <a href="{{ url_for('change_password') }}" class="option">Change Password</a>
+    </nav>
+    
+    <div class="auth">
+      <button class="register" style="background-color: #333;" onclick="location.href='/logout'"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
+
+  <main class="admin-container">
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category if category != 'error' else 'danger' }}" style="padding: 15px; margin-bottom: 20px; border-radius: 8px; font-weight: 500; font-size: 14px; display: flex; align-items: center; gap: 10px;
+              {% if category == 'error' or category == 'danger' %}
+                background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;
+              {% elif category == 'warning' %}
+                background-color: #ffedd5; color: #c2410c; border: 1px solid #fdbb2d;
+              {% else %}
+                background-color: #dcfce7; color: #166534; border: 1px solid #86efac;
+              {% endif %}">
+              {% if category == 'error' or category == 'danger' %}
+                <i class="fa-solid fa-circle-exclamation"></i>
+              {% elif category == 'warning' %}
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              {% else %}
+                <i class="fa-solid fa-circle-check"></i>
+              {% endif %}
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <div class="admin-hero-modern">
+          <div class="hero-content">
+              <h1>Welcome, {{ user.username }}! ☀️</h1>
+              <p>Here is your daily briefing. You have <strong>{{ pending_requests|length }} pending approvals</strong> and <strong>{{ stats.total_bookings }} total bookings</strong> overall.</p>
+              <div class="hero-actions">
+                  <button class="btn-glass" onclick="location.href='{{ url_for('admin_revenue') }}'"><i class="fa-solid fa-indian-rupee-sign"></i> View Revenue</button>
+                  <button class="btn-glass primary" onclick="location.href='{{ url_for('admin_settings') }}'"><i class="fa-solid fa-gears"></i> Settings</button>
+              </div>
+          </div>
+          <div class="hero-decoration">
+              <div class="circle c1"></div>
+              <div class="circle c2"></div>
+              <img src="https://static.vecteezy.com/system/resources/previews/005/360/182/original/online-data-analysis-flat-illustration-of-data-analytics-vector.jpg" alt="Analytics Illustration" class="hero-img">
+          </div>
+      </div>
+
+      <section class="modern-stats-grid">
+          
+          <div class="stat-box gradient-blue">
+              <div class="stat-top">
+                  <div>
+                      <span>Total Revenue</span>
+                      <h3 class="counter" data-target="{{ stats.total_revenue }}">0</h3>
+                  </div>
+                  <i class="fa-solid fa-indian-rupee-sign icon-bg"></i>
+              </div>
+              <div class="stat-bottom">
+                  <span class="badge white-badge">+18%</span>
+                  <small>Since last month</small>
+              </div>
+          </div>
+
+          <div class="stat-box gradient-purple">
+              <div class="stat-top">
+                  <div>
+                      <span>Total Bookings</span>
+                      <h3 class="counter" data-target="{{ stats.total_bookings }}">0</h3>
+                  </div>
+                  <i class="fa-solid fa-calendar-check icon-bg"></i>
+              </div>
+              <div class="stat-bottom">
+                  <span class="badge white-badge">+5%</span>
+                  <small>Since last week</small>
+              </div>
+          </div>
+
+          <div class="stat-box gradient-orange">
+              <div class="stat-top">
+                  <div>
+                      <span>Active Users</span>
+                      <h3 class="counter" data-target="{{ stats.total_users }}">0</h3>
+                  </div>
+                  <i class="fa-solid fa-users icon-bg"></i>
+              </div>
+              <div class="stat-bottom">
+                  <span class="badge white-badge">+120</span>
+                  <small>New registrations</small>
+              </div>
+          </div>
+
+          <div class="stat-box gradient-green">
+              <div class="stat-top">
+                  <div>
+                      <span>Service Providers</span>
+                      <h3 class="counter" data-target="{{ stats.total_vendors }}">0</h3>
+                  </div>
+                  <i class="fa-solid fa-store icon-bg"></i>
+              </div>
+              <div class="stat-bottom">
+                  <span class="badge white-badge warning">{{ pending_requests|length }} Pending</span>
+                  <small>Needs approval</small>
+              </div>
+          </div>
+      </section>
+
+      <section class="dashboard-main-grid">
+          
+          <div class="grid-left">
+              
+              <div class="card graph-card">
+                  <div class="card-header-flex">
+                      <h2><i class="fa-solid fa-chart-simple"></i> Revenue Analytics</h2>
+                      <select class="minimal-select">
+                          <option>This Week</option>
+                          <option>This Month</option>
+                      </select>
+                  </div>
+                  <div class="chart-visual">
+                      <div class="bar-wrapper">
+                          <div class="bar" style="height: 40%;" data-tooltip="Mon: ₹40k"></div>
+                          <span class="day">M</span>
+                      </div>
+                      <div class="bar-wrapper">
+                          <div class="bar" style="height: 65%;" data-tooltip="Tue: ₹65k"></div>
+                          <span class="day">T</span>
+                      </div>
+                      <div class="bar-wrapper">
+                          <div class="bar" style="height: 50%;" data-tooltip="Wed: ₹50k"></div>
+                          <span class="day">W</span>
+                      </div>
+                      <div class="bar-wrapper">
+                          <div class="bar active" style="height: 90%;" data-tooltip="Thu: ₹90k"></div>
+                          <span class="day">T</span>
+                      </div>
+                      <div class="bar-wrapper">
+                          <div class="bar" style="height: 75%;" data-tooltip="Fri: ₹75k"></div>
+                          <span class="day">F</span>
+                      </div>
+                      <div class="bar-wrapper">
+                          <div class="bar" style="height: 60%;" data-tooltip="Sat: ₹60k"></div>
+                          <span class="day">S</span>
+                      </div>
+                      <div class="bar-wrapper">
+                          <div class="bar" style="height: 85%;" data-tooltip="Sun: ₹85k"></div>
+                          <span class="day">S</span>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="card tasks-card">
+                  <div class="card-header-flex">
+                      <h2><i class="fa-solid fa-list-check"></i> Pending Tasks</h2>
+                      <button class="icon-btn-small"><i class="fa-solid fa-plus"></i></button>
+                  </div>
+                  <div class="task-list">
+                      <div class="task-item">
+                          <input type="checkbox" id="t1">
+                          <label for="t1">Verify vendor documentation for "Spice Route".</label>
+                          <span class="tag high">High</span>
+                      </div>
+                      <div class="task-item">
+                          <input type="checkbox" id="t2">
+                          <label for="t2">Refund processing for Booking #BK-903.</label>
+                          <span class="tag med">Med</span>
+                      </div>
+                      <div class="task-item">
+                          <input type="checkbox" id="t3">
+                          <label for="t3">Update terms and conditions page.</label>
+                          <span class="tag low">Low</span>
+                      </div>
+                      <div class="task-item">
+                          <input type="checkbox" id="t4">
+                          <label for="t4">Review monthly revenue report.</label>
+                          <span class="tag low">Low</span>
+                      </div>
+                  </div>
+              </div>
+
+          </div>
+
+          <div class="grid-right">
+              <div class="card feed-card">
+                  <div class="card-header-flex">
+                      <h2>Live Feed</h2>
+                      <span class="live-indicator">● Live</span>
+                  </div>
+                  <ul class="live-list">
+                      <li>
+                          <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="User">
+                          <div>
+                              <strong>Priya S.</strong> booked a Decorator.
+                              <small>Just now</small>
+                          </div>
+                      </li>
+                      <li>
+                          <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="User">
+                          <div>
+                              <strong>Rahul K.</strong> signed up.
+                              <small>5 mins ago</small>
+                          </div>
+                      </li>
+                      <li>
+                          <div class="icon-placeholder bg-orange"><i class="fa-solid fa-store"></i></div>
+                          <div>
+                              <strong>Elite Decorators</strong> updated profile.
+                              <small>12 mins ago</small>
+                          </div>
+                      </li>
+                      <li>
+                          <div class="icon-placeholder bg-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                          <div>
+                              <strong>System</strong> flagged a transaction.
+                              <small>30 mins ago</small>
+                          </div>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+
+      </section>
+
+  </main>
+
+  <footer>
+        <div class="footer-col">
+            CMR college <br>  
+            Kandlakoya<br>
+            Medchel Telangana
+        </div>
+        <div class="footer-col end">
+            Tel: 08965436 <br>
+            Ph.no:91 8976564390<br>
+            info@eventnest.com
+        </div>
+        <div class="footer-col end">
+            ©2035 by EventNest. <br>
+            Powered and secured by FireWall
+        </div>
+        <div class="footer-col" id="last">
+            <div class="social-icons">
+                <a href="https://www.facebook.com"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://www.github.com"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.instagram.com"><i class="fa-brands fa-instagram"></i></a>
+            </div> 
+            <br>
+            <button id="down"><a href="{{ url_for('admin_bookings') }}" id="no">Bookings</a></button>
+        </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/shared-utils.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/admin/script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/user/sigup_script.js') }}"></script>
+</body>
+</html>

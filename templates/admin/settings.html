@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/settings.css', v='1.3') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="navbar">
+    
+    <!-- Header -->
+        <div class="logo">
+          make
+          <img
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
+            alt=""
+            class="image"
+          />
+          event
+        </div>
+
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search settings...">
+    </div>
+
+    <nav class="desktop-nav">
+      <a href="{{ url_for('admin_dashboard') }}" class="option">Dashboard</a>
+      <a href="{{ url_for('admin_vendors') }}" class="option">Vendors</a>
+      <a href="{{ url_for('admin_users') }}" class="option">Users</a>
+      <a href="{{ url_for('admin_bookings') }}" class="option">Booking</a>
+      <a href="{{ url_for('change_password') }}" class="option">Change Password</a>
+    </nav>
+    
+    <div class="auth">
+      <button class="register" style="background-color: #333;" onclick="location.href='/logout'"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
+
+  <main class="admin-container">
+      
+      <form action="{{ url_for('admin_settings') }}" method="POST" id="settingsForm" enctype="multipart/form-data" data-original-avatar="{{ session.profile_image or url_for('static', filename='images/default_avatar.svg') }}">
+      <div class="admin-header">
+          <div>
+              <h1>Settings</h1>
+              <p>Manage your profile, security preferences, and website configurations.</p>
+          </div>
+          <div class="action-buttons">
+              <button type="button" class="glass-btn" onclick="document.getElementById('settingsForm').reset()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+              <button type="submit" class="glass-btn primary"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+          </div>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div style="padding: 15px; margin-bottom: 20px; border-radius: 4px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <div class="settings-grid">
+          
+          <div class="left-column">
+              
+              <div class="card settings-card">
+                  <div class="card-header">
+                      <h2><i class="fa-solid fa-user-gear"></i> Profile Settings</h2>
+                  </div>
+                  <div class="profile-upload-section">
+                      <div class="profile-preview">
+                          <img src="{{ session.profile_image or url_for('static', filename='images/default_avatar.svg') }}" id="adminAvatar" alt="Admin" style="cursor: pointer;">
+                          <input type="file" name="admin_avatar" id="adminAvatarInput" style="display:none;" accept="image/*">
+                          <button type="button" class="camera-btn"><i class="fa-solid fa-camera"></i></button>
+                      </div>
+                      <div class="upload-text">
+                          <strong>Admin Avatar</strong>
+                          <p>Allowed: JPG, PNG. Max size of 800K</p>
+                      </div>
+                  </div>
+                  <div class="settings-form">
+                      <div class="form-group">
+                          <label>Full Name</label>
+                          <input type="text" name="setting_admin_name" value="{{ settings.get('admin_name', 'Super Admin') }}" class="form-input">
+                      </div>
+                      <div class="form-group">
+                          <label>Email Address</label>
+                          <input type="email" name="setting_admin_email" value="{{ settings.get('admin_email', 'admin@eventnest.com') }}" class="form-input">
+                      </div>
+                      <div class="form-group">
+                          <label>Role</label>
+                          <input type="text" value="Super Administrator" class="form-input" disabled style="background:#f1f5f9; cursor: not-allowed;">
+                      </div>
+                  </div>
+              </div>
+
+              <div class="card settings-card">
+                  <div class="card-header">
+                      <h2><i class="fa-solid fa-shield-halved"></i> Security</h2>
+                  </div>
+                  <div class="settings-form">
+                      <div class="form-group">
+                          <label>Current Password</label>
+                          <input type="password" placeholder="••••••••" class="form-input">
+                      </div>
+                      <div class="form-row">
+                          <div class="form-group">
+                               <label>New Password</label>
+                               <input type="password" placeholder="New password" class="form-input">
+                          </div>
+                          <div class="form-group">
+                               <label>Confirm Password</label>
+                               <input type="password" placeholder="Confirm password" class="form-input">
+                          </div>
+                      </div>
+                      <div class="toggle-group">
+                          <div class="toggle-text">
+                              <strong>Two-Factor Authentication</strong>
+                              <p>Secure your account with 2FA.</p>
+                          </div>
+                          <label class="switch">
+                              <input type="checkbox" name="setting_2fa" {% if settings.get('2fa') == 'on' %}checked{% endif %}>
+                              <span class="slider round"></span>
+                          </label>
+                      </div>
+                  </div>
+              </div>
+
+          </div>
+
+          <div class="right-column">
+              
+              <div class="card settings-card">
+                  <div class="card-header">
+                      <h2><i class="fa-solid fa-bell"></i> Notifications</h2>
+                  </div>
+                  <div class="toggle-list">
+                      <div class="toggle-group">
+                          <div class="toggle-text">
+                              <strong>New Booking Alerts</strong>
+                              <p>Get emailed when a new booking is made.</p>
+                          </div>
+                          <label class="switch">
+                              <input type="checkbox" name="setting_notify_booking" {% if settings.get('notify_booking') == 'on' %}checked{% endif %}>
+                              <span class="slider round"></span>
+                          </label>
+                      </div>
+                      <div class="toggle-group">
+                          <div class="toggle-text">
+                              <strong>Vendor Registration</strong>
+                              <p>Notify when a new vendor signs up.</p>
+                          </div>
+                          <label class="switch">
+                              <input type="checkbox" name="setting_notify_vendor" {% if settings.get('notify_vendor') == 'on' %}checked{% endif %}>
+                              <span class="slider round"></span>
+                          </label>
+                      </div>
+                      <div class="toggle-group">
+                          <div class="toggle-text">
+                              <strong>System Updates</strong>
+                              <p>Receive weekly system performance reports.</p>
+                          </div>
+                          <label class="switch">
+                              <input type="checkbox" name="setting_notify_system" {% if settings.get('notify_system') == 'on' %}checked{% endif %}>
+                              <span class="slider round"></span>
+                          </label>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="card settings-card">
+                  <div class="card-header">
+                      <h2><i class="fa-solid fa-globe"></i> Website Configuration</h2>
+                  </div>
+                  <div class="settings-form">
+                      <div class="form-group">
+                          <label>Site Name</label>
+                          <input type="text" name="setting_site_name" value="{{ settings.get('site_name', 'Event Nest') }}" class="form-input">
+                      </div>
+                      <div class="form-group">
+                          <label>Support Contact Phone</label>
+                          <input type="text" name="setting_support_phone" value="{{ settings.get('support_phone', '+123 456 7890') }}" class="form-input">
+                      </div>
+                      <div class="toggle-group danger-zone">
+                          <div class="toggle-text">
+                              <strong>Maintenance Mode</strong>
+                              <p class="text-red">Disable site access for users.</p>
+                          </div>
+                          <label class="switch">
+                              <input type="checkbox" name="setting_maintenance_mode" {% if settings.get('maintenance_mode') == 'on' %}checked{% endif %}>
+                              <span class="slider round red"></span>
+                          </label>
+                      </div>
+                  </div>
+              </div>
+
+          </div>
+
+      </div>
+      </form>
+
+  </main>
+
+  <footer>
+        <div class="footer-col">
+            CMR college <br>  
+            Kandlakoya<br>
+            Medchel Telangana
+        </div>
+        <div class="footer-col end">
+            Tel: 08965436 <br>
+            Ph.no:91 8976564390<br>
+            info@eventnest.com
+        </div>
+        <div class="footer-col end">
+            ©2035 by EventNest. <br>
+            Powered and secured by FireWall
+        </div>
+        <div class="footer-col" id="last">
+            <div class="social-icons">
+                <a href="https://www.facebook.com"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://www.github.com"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.instagram.com"><i class="fa-brands fa-instagram"></i></a>
+            </div> 
+            <br>
+            <button id="down"><a href="{{ url_for('admin_bookings') }}" id="no">Bookings</a></button>
+        </div>
+    </footer>
+
+  <script src="{{ url_for('static', filename='js/admin/settings.js') }}"></script>
+</body>
+</html>

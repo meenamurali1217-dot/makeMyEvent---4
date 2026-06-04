@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bookings & Calendar | Vendor Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vendor/booking.css', v='1.3') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+  <script>
+    // Inject bookings from Python Flask
+    window.vendorBookings = [
+      {% for bk in bookings %}
+      {
+        id: '{{ bk.booking_id }}',
+        title: '{{ bk.event_type|capitalize }} - {{ bk.customer_name }}',
+        start: '{{ bk.event_date }}T{{ bk.event_time or "10:00:00" }}',
+        color: '{% if bk.status in ["completed", "confirmed", "approved"] %}#22c55e{% elif bk.status == "pending" %}#f97316{% else %}#ef4444{% endif %}',
+        extendedProps: {
+            customer: '{{ bk.customer_name }}',
+            customerId: '{{ bk.user_id }}',
+            service: '{{ bk.event_type|capitalize }}',
+            location: '{{ bk.venue or "To Be Decided" }}',
+            price: '₹ {{ bk.total_amount }}',
+            status: '{{ bk.status|capitalize }}',
+            cancellationReason: '{{ bk.cancellation_reason|replace("\x27", "\\\x27")|replace("\n", " ") if bk.cancellation_reason else "" }}'
+        }
+      },
+      {% endfor %}
+    ];
+  </script>
+</head>
+<body>
+
+  <header class="navbar">
+
+    <!-- Header -->
+        <div class="logo">
+          make
+          <img
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
+            alt=""
+            class="image"
+          />
+          event
+        </div>
+
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search bookings...">
+    </div>
+
+    <nav class="desktop-nav">
+      <a href="{{ url_for('vendor_dashboard') }}" class="option">Dashboard</a>
+      <a href="{{ url_for('vendor_services') }}" class="option">My Services</a>
+      <a href="{{ url_for('vendor_earnings') }}" class="option">Earnings</a>
+      <a href="{{ url_for('vendor_messages') }}" class="option">Messages</a>
+      <a href="{{ url_for('vendor_profile') }}" class="option">Profile</a>
+      <a href="{{ url_for('change_password') }}" class="option">Change Password</a>
+    </nav>
+    
+    <!-- Notification Bell -->
+    <div class="icon-btn" onclick="toggleNotificationDropdown(event)" style="position: relative; margin-right: 15px; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 5px; color: inherit;">
+        🔔 <span style="font-weight: 500;">Notifications <span id="notification-badge" style="display: none; background: #ef4444; color: white; border-radius: 50%; padding: 1px 6px; font-size: 10px; font-weight: bold; margin-left: 2px;"></span></span>
+        
+        <!-- Notification Dropdown -->
+        <div id="notificationDropdown" class="user-dropdown" style="display: none; width: 320px; padding: 10px 0; right: 0; top: 40px; text-align: left; max-height: 400px; overflow: hidden; flex-direction: column; position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000;">
+            <div style="padding: 5px 15px 10px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 14px; color: #1e293b;">Recent Alerts</span>
+                <span onclick="markVendorNotificationsAsRead(event)" style="font-size: 12px; color: #2196f3; cursor: pointer; font-weight: normal;">Mark all read</span>
+            </div>
+            <div id="notificationDropdownList" style="max-height: 280px; overflow-y: auto; padding: 5px 0;">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="auth">
+      <button class="register" style="background-color: #333;" onclick="location.href='/logout'"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
+
+  <main class="admin-container">
+      
+      <div class="admin-hero-enhanced">
+          <div class="hero-text">
+              <h1>Booking Schedule</h1>
+              <p>Manage your upcoming events, check availability, and track job status.</p>
+              <div class="hero-badges">
+                  <span><i class="fa-solid fa-calendar-day"></i> Total Bookings: {{ bookings|length }}</span>
+                  <span><i class="fa-solid fa-clock"></i> Pending: {{ bookings|selectattr('status', 'equalto', 'pending')|list|length }}</span>
+              </div>
+          </div>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div style="padding: 15px; margin-bottom: 20px; border-radius: 4px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <div class="booking-layout">
+          
+          <div class="calendar-wrapper">
+              <div class="card">
+                  <div id="calendar"></div>
+              </div>
+          </div>
+
+          <div class="booking-sidebar">
+              
+              <div class="card pending-card">
+                  <div class="card-header-small">
+                      <h3>Pending Requests</h3>
+                      <span class="badge warning">{{ bookings|selectattr('status', 'equalto', 'pending')|list|length }} New</span>
+                  </div>
+                  <div class="request-list">
+                      {% for bk in bookings if bk.status == 'pending' %}
+                      <div class="request-item">
+                          <div class="req-date">
+                              <span>EVENT</span>
+                              <strong>#{{ bk.booking_id }}</strong>
+                          </div>
+                          <div class="req-info">
+                              <h4>{{ bk.event_type|capitalize }}</h4>
+                              <p>{{ bk.customer_name }} • ₹{{ bk.total_amount }}</p>
+                          </div>
+                          <div class="req-actions">
+                              <form action="{{ url_for('vendor_update_booking', booking_id=bk.booking_id) }}" method="POST" style="display:inline;">
+                                  <input type="hidden" name="status" value="confirmed">
+                                  <button class="icon-btn-sm check" type="submit" title="Accept"><i class="fa-solid fa-check"></i></button>
+                              </form>
+                              <form action="{{ url_for('vendor_update_booking', booking_id=bk.booking_id) }}" method="POST" style="display:inline;">
+                                  <input type="hidden" name="status" value="cancelled">
+                                  <button class="icon-btn-sm cross" type="submit" title="Decline"><i class="fa-solid fa-xmark"></i></button>
+                              </form>
+                          </div>
+                      </div>
+                      {% else %}
+                      <p style="text-align: center; color: #666; padding: 10px 0;">No pending requests.</p>
+                      {% endfor %}
+                  </div>
+              </div>
+
+              <div class="card upcoming-card">
+                  <div class="card-header-small">
+                      <h3>Upcoming Calendar List</h3>
+                  </div>
+                  <ul class="upcoming-list" id="upcomingList">
+                  </ul>
+              </div>
+
+          </div>
+      </div>
+
+  </main>
+
+  <div id="eventModal" class="modal-overlay">
+      <div class="modal-card booking-modal">
+          <div class="modal-header">
+              <h2>Booking Details</h2>
+              <span class="close-modal" onclick="closeModal()">✖</span>
+          </div>
+          
+          <div class="modal-body">
+              <div class="modal-status-bar" id="modalStatus">Confirmed</div>
+              
+              <div class="detail-row">
+                  <div class="icon"><i class="fa-solid fa-user"></i></div>
+                  <div>
+                      <small>Customer Name</small>
+                      <strong id="mCustomer">Loading...</strong>
+                  </div>
+              </div>
+
+              <div class="detail-row">
+                  <div class="icon"><i class="fa-solid fa-layer-group"></i></div>
+                  <div>
+                      <small>Service Type</small>
+                      <strong id="mService">Loading...</strong>
+                  </div>
+              </div>
+
+              <div class="detail-row">
+                  <div class="icon"><i class="fa-solid fa-calendar"></i></div>
+                  <div>
+                      <small>Date & Time</small>
+                      <strong id="mDate">Loading...</strong>
+                  </div>
+              </div>
+
+              <div class="detail-row">
+                  <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
+                  <div>
+                      <small>Venue Location</small>
+                      <strong id="mLocation">Loading...</strong>
+                  </div>
+              </div>
+
+              <div class="detail-row">
+                  <div class="icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                  <div>
+                      <small>Total Amount</small>
+                      <strong id="mPrice">Loading...</strong>
+                  </div>
+              </div>
+
+              <div class="detail-row" id="mCancelReasonRow" style="display: none; background-color: #fee2e2; padding: 10px; border-radius: 6px; border-left: 4px solid #ef4444;">
+                  <div class="icon" style="color: #ef4444;"><i class="fa-solid fa-circle-exclamation"></i></div>
+                  <div>
+                      <small style="color: #b91c1c; font-weight: 600;">Cancellation Reason</small>
+                      <strong id="mCancelReason" style="color: #b91c1c; font-weight: 600;">Loading...</strong>
+                  </div>
+              </div>
+          </div>
+
+          <div class="modal-footer">
+              <button class="s-btn contact"><i class="fa-solid fa-phone"></i> Contact</button>
+              <button class="s-btn chat"><i class="fa-solid fa-message"></i> Message</button>
+          </div>
+      </div>
+  </div>
+
+  <footer>
+        <div class="footer-col">
+            CMR college <br>  
+            Kandlakoya<br>
+            Medchel Telangana
+        </div>
+        <div class="footer-col end">
+            Tel: 08965436 <br>
+            Ph.no:91 8976564390<br>
+            info@eventnest.com
+        </div>
+        <div class="footer-col end">
+            ©2035 by EventNest. <br>
+            Powered and secured by FireWall
+        </div>
+        <div class="footer-col" id="last">
+            <div class="social-icons">
+                <a href="https://www.facebook.com"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://github.com"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.instagram.com"><i class="fa-brands fa-instagram"></i></a>
+            </div> 
+            <br>
+            <button id="down"><a href="{{ url_for('vendor_booking') }}" id="no">Bookings</a></button>
+        </div>
+    </footer>
+
+  <script src="{{ url_for('static', filename='js/vendor/vendor_script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/vendor/booking.js') }}"></script>
+</body>
+</html>

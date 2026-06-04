@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reports & Analytics | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/revenue.css', v='1.3') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="navbar">
+    
+    <!-- Header -->
+        <div class="logo">
+          make
+          <img
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
+            alt=""
+            class="image"
+          />
+          event
+        </div>
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search report ID or date...">
+    </div>
+
+    <nav class="desktop-nav">
+      <a href="{{ url_for('admin_dashboard') }}" class="option">Dashboard</a>
+      <a href="{{ url_for('admin_vendors') }}" class="option">Vendors</a>
+      <a href="{{ url_for('admin_users') }}" class="option">Users</a>
+      <a href="{{ url_for('admin_bookings') }}" class="option">Booking</a>
+      <a href="{{ url_for('change_password') }}" class="option">Change Password</a>
+    </nav>
+    
+    <div class="auth">
+      <button class="register" style="background-color: #333;" onclick="location.href='/logout'"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
+
+  <main class="admin-container">
+      
+      <div class="admin-hero-enhanced">
+          <div class="hero-text">
+              <h1>Financial Intelligence</h1>
+              <p>Deep dive into platform performance, revenue streams, and user growth.</p>
+              <div class="hero-badges">
+                  <span><i class="fa-solid fa-calendar-days"></i> Fiscal Year: 2026-27</span>
+              </div>
+          </div>
+          <div class="hero-visual">
+              <div class="date-filter">
+                  <input type="date" value="2026-01-01">
+                  <span>to</span>
+                  <input type="date" value="2026-12-31">
+              </div>
+              <button class="glass-btn primary"><i class="fa-solid fa-filter"></i> Apply Filter</button>
+          </div>
+      </div>
+
+      <section class="stats-row">
+          <div class="stat-card">
+              <div class="stat-icon green"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+              <div class="stat-info">
+                  <h3>₹ {{ revenue|sum(attribute='revenue') }}</h3>
+                  <p>Gross Revenue</p>
+                  <span class="trend up"><i class="fa-solid fa-arrow-up"></i> 15% YoY</span>
+              </div>
+          </div>
+          <div class="stat-card">
+              <div class="stat-icon blue"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+              <div class="stat-info">
+                  <h3>₹ {{ (revenue|sum(attribute='revenue') * 0.1)|round|int }}</h3>
+                  <p>Platform Commission (10%)</p>
+                  <span class="trend up">Net Profit</span>
+              </div>
+          </div>
+          <div class="stat-card">
+              <div class="stat-icon orange"><i class="fa-solid fa-receipt"></i></div>
+              <div class="stat-info">
+                  <h3>₹ 0</h3>
+                  <p>Pending Payouts</p>
+                  <span class="trend down">Due in 3 days</span>
+              </div>
+          </div>
+          <div class="stat-card">
+              <div class="stat-icon purple"><i class="fa-solid fa-wallet"></i></div>
+              <div class="stat-info">
+                  <h3>₹ 0</h3>
+                  <p>Refunds Processed</p>
+                  <span class="trend down">0% Return Rate</span>
+              </div>
+          </div>
+      </section>
+
+      <section class="dashboard-grid-layout">
+          
+          <div class="left-column">
+              <div class="card chart-card">
+                  <div class="card-header">
+                      <h2>Category Performance</h2>
+                      <button class="icon-btn-bordered"><i class="fa-solid fa-download"></i></button>
+                  </div>
+                  
+                  <div class="category-list">
+                      {% for c in categories_data %}
+                      <div class="cat-item">
+                          <div class="cat-info">
+                              <span><i class="fa-solid {{ c.icon }}" style="color:{{ c.color }}"></i> {{ c.label }}</span>
+                              <strong>{{ c.percentage }}%</strong>
+                          </div>
+                          <div class="progress-bar">
+                              <div class="progress-fill" style="width: {{ c.percentage }}%; background-color: {{ c.color }};"></div>
+                          </div>
+                          <small>₹{{ c.revenue }} Revenue</small>
+                      </div>
+                      {% endfor %}
+                  </div>
+              </div>
+          </div>
+
+          <div class="right-column">
+              
+              <div class="card">
+                  <div class="card-header">
+                      <h2>Export Reports</h2>
+                  </div>
+                  <div class="report-list">
+                      <div class="report-item">
+                          <div class="rep-icon pdf"><i class="fa-solid fa-file-pdf"></i></div>
+                          <div class="rep-details">
+                              <h4>Monthly Sales Report</h4>
+                              <p>Dec 2025 • 2.4 MB</p>
+                          </div>
+                          <button class="download-btn" onclick="downloadReport(this)"><i class="fa-solid fa-download"></i></button>
+                      </div>
+
+                      <div class="report-item">
+                          <div class="rep-icon csv"><i class="fa-solid fa-file-csv"></i></div>
+                          <div class="rep-details">
+                              <h4>User Growth Data</h4>
+                              <p>Year 2025 • 850 KB</p>
+                          </div>
+                          <button class="download-btn" onclick="downloadReport(this)"><i class="fa-solid fa-download"></i></button>
+                      </div>
+
+                      <div class="report-item">
+                          <div class="rep-icon excel"><i class="fa-solid fa-file-excel"></i></div>
+                          <div class="rep-details">
+                              <h4>Vendor Payout Sheet</h4>
+                              <p>Q4 2025 • 1.2 MB</p>
+                          </div>
+                          <button class="download-btn" onclick="downloadReport(this)"><i class="fa-solid fa-download"></i></button>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="card alert-card-box">
+                  <h3><i class="fa-solid fa-bell"></i> Insights</h3>
+                  <ul class="insight-list">
+                      <li>Spending on <strong>Decoration</strong> has increased by 15% this month.</li>
+                      <li><strong>New Year's Eve</strong> bookings generated the highest daily revenue (₹1.2L).</li>
+                      <li>3 Vendors have crossed the <strong>₹10L</strong> payout milestone.</li>
+                  </ul>
+              </div>
+
+          </div>
+      </section>
+
+      <section class="vendor-table-section">
+          <div class="card table-card full-width-card">
+              <div class="card-header">
+                  <h2>Monthly Financial Summary Log</h2>
+                  <button class="view-all">View Full Log</button>
+              </div>
+              <div class="table-responsive">
+                  <table>
+                      <thead>
+                          <tr>
+                              <th>Month</th>
+                              <th>Booking Count</th>
+                              <th>Platform Share (10%)</th>
+                              <th>Total Revenue</th>
+                              <th>Status</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {% for rev in revenue %}
+                          <tr>
+                              <td>{{ rev.month }}</td>
+                              <td>{{ rev.booking_count }} bookings</td>
+                              <td>₹{{ (rev.revenue * 0.1)|round|int }}</td>
+                              <td><strong>₹{{ rev.revenue }}</strong></td>
+                              <td><span class="status completed">Success</span></td>
+                          </tr>
+                          {% else %}
+                          <tr>
+                              <td colspan="5" style="text-align:center;">No financial data available</td>
+                          </tr>
+                          {% endfor %}
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </section>
+
+  </main>
+
+  <footer>
+        <div class="footer-col">
+            CMR college <br>  
+            Kandlakoya<br>
+            Medchel Telangana
+        </div>
+        <div class="footer-col end">
+            Tel: 08965436 <br>
+            Ph.no:91 8976564390<br>
+            info@eventnest.com
+        </div>
+        <div class="footer-col end">
+            ©2035 by EventNest. <br>
+            Powered and secured by FireWall
+        </div>
+        <div class="footer-col" id="last">
+            <div class="social-icons">
+                <a href="https://www.facebook.com"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://www.github.com"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.instagram.com"><i class="fa-brands fa-instagram"></i></a>
+            </div> 
+            <br>
+            <button id="down"><a href="{{ url_for('admin_bookings') }}" id="no">Bookings</a></button>
+        </div>
+    </footer>
+
+  <script src="{{ url_for('static', filename='js/admin/revenue.js') }}"></script>
+</body>
+</html>

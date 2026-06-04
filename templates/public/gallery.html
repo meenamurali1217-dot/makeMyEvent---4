@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>EventNest | Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user/gallery_style.css', v='1.3') }}" />
+  </head>
+  <body>
+    <div class="head_and_hero">
+      <!-- Header -->
+      <header class="navbar">
+        <div class="logo">
+          make
+          <img
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
+            alt=""
+            class="image"
+          />
+          event
+        </div>
+
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Search events or Services..." />
+        </div>
+
+        <nav>
+          <a href="{{ url_for('index') }}" class="option">Home</a>
+          <a href="{{ url_for('public_gallery') }}" class="option">Gallery</a>
+          <a href="{{ url_for('public_about') }}" class="option"
+            >About</a
+          >
+        </nav>
+
+    
+        <div class="auth">
+          <a href="{{ url_for('signup') }}"
+            ><button class="login">
+              <img
+                src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjV6bMs6hvIDSG-IbeZq1OqdoH7lnUJKXFSODhERwf7D3M6fuuJRadljjktdpmvGblYCSpud5ZO-Bl8Bwl5_yeKhIRPAmq4LMLicA63dDh274-FGREPjE9fx321NisbWKQwHgCreijli80fBJtCntA13YtbDqTM3uQceATgq2xVuoqsKg3OzfEuNxv-aOM/s1600/Screenshot%202026-03-27%20122136%203.png"
+                alt=""
+                class="image2"
+              />
+              Login or create account
+            </button></a
+          >
+        </div>
+        
+      </header>
+
+      <!-- HERO -->
+      <section class="hero">
+        <h1>Our Event Gallery</h1>
+        <p>Unforgettable Moments We've Created</p>
+      </section>
+    </div>
+
+    <!-- FILTER BUTTONS -->
+    <div class="filters">
+      <button class="filter active" data-filter="all">All</button>
+      <button class="filter" data-filter="wedding">Weddings</button>
+      <button class="filter" data-filter="birthday">Birthdays</button>
+      <button class="filter" data-filter="pooja">Poojas</button>
+      <button class="filter" data-filter="haldi">Haldi & Mehndi</button>
+      <button class="filter" data-filter="decor">Decorations</button>
+    </div>
+
+    <h3 class="gallery-title">IMAGE GALLERY</h3>
+
+    <!-- GALLERY GRID -->
+    <section class="gallery">
+      {% for img in images %}
+      <div class="card {{ img.category or 'wedding' }}" onclick="openModal(this)">
+        <img
+          src="{{ img.image_url }}"
+          width="100%"
+          class="image"
+        />
+        <p class="name">{{ img.caption or 'Gallery Image' }}</p>
+      </div>
+      {% else %}
+      <div class="card wedding" onclick="openModal(this)">
+        <img
+          src="https://www.fiestroevents.com/uploads/24/10/071024172829078967039fe580289.jpg"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Elegant Wedding</p>
+      </div>
+
+      <div class="card birthday" onclick="openModal(this)">
+        <img
+          src="https://content.jdmagicbox.com/comp/dhanbad/n9/9999px326.x326.240429014819.u1n9/catalogue/shaan-dhanbad-decorations-ballon-and-event-party-dhanbad-hirapur-dhanbad-balloon-decorators-for-baby-shower-au4y7bnact.jpg"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Fun Birthday Party</p>
+      </div>
+
+      <div class="card pooja" onclick="openModal(this)">
+        <img
+          src="https://i.pinimg.com/736x/f1/06/4f/f1064f8216275993cf294def55bb54e0.jpg"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Traditional Pooja</p>
+      </div>
+
+      <div class="card decor" onclick="openModal(this)">
+        <img
+          src="https://5.imimg.com/data5/SELLER/Default/2025/5/512152398/OJ/KM/NR/137057838/wedding-stage-decoration.jpeg"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Stage Decoration</p>
+      </div>
+
+      <div class="card haldi" onclick="openModal(this)">
+        <img
+          src="https://lovelyflowersart.com/wp-content/uploads/2024/08/pexels-photo-12153938-12153938-1024x682.jpg"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Haldi Ceremony</p>
+      </div>
+
+      <div class="card wedding" onclick="openModal(this)">
+        <img
+          src="https://cdn0.weddingwire.in/article/8612/3_2/960/jpg/122168-plushaffairs-cover.jpeg"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Royal Reception</p>
+      </div>
+
+      <div class="card decor" onclick="openModal(this)">
+        <img
+          src="https://img.staticmb.com/mbcontent/images/crop/uploads/2023/8/Heaven_4_0_1200.jpg.webp"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Elegant Decor</p>
+      </div>
+
+      <div class="card decor" onclick="openModal(this)">
+        <img
+          src="https://www.weddingsutra.com/images/aakar-events-thumb-700x452.jpg"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Elegant Decor</p>
+      </div>
+
+      <div class="card haldi" onclick="openModal(this)">
+        <img
+          src="https://i2.wp.com/wittyvows.com/wp-content/uploads/2020/03/mehendi-mistakes.jpg"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Mehndi Function</p>
+      </div>
+
+      <div class="card birthday" onclick="openModal(this)">
+        <img
+          src="https://www.partyone.in/suploads/2024/Dec/14/39152/1734178734image-83_Nero-AI_Photo.webp"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Balloon Setup</p>
+      </div>
+
+      <div class="card decor" onclick="openModal(this)">
+        <img
+          src="https://png.pngtree.com/thumb_back/fh260/background/20250320/pngtree-romantic-floral-wedding-stage-with-elegant-pink-drapes-image_17119345.jpg"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Stage Decoration</p>
+      </div>
+
+      <div class="card decor" onclick="openModal(this)">
+        <img
+          src="https://img.weddingbazaar.com/photos/pictures/007/094/706/new_large/page.jpg?1686920714"
+          width="100%"
+          class="image"
+        />
+        <p class="name">Stage Decoration</p>
+      </div>
+      {% endfor %}
+    </section>
+    <section class="slider-section">
+      <!-- <h2 class="title">Mehndi Function</h2> -->
+      <div class="slider">
+        <div class="slides">
+          <img
+            src="https://static.vecteezy.com/system/resources/thumbnails/043/918/635/small/wedding-stage-decoration-background-inside-the-building-with-elegant-and-beautiful-flower-decorations-free-photo.jpeg"
+            width="100%"
+            height="auto"
+          />
+          <img
+            src="https://www.partyone.in/suploads/2024/Sep/27/39041/1727430212DSC01849.webp"
+            width="100%"
+            height="auto"
+          />
+          <img
+            src="https://www.weddingplz.com/blog/wp-content/uploads/PSX_20231007_190302.jpg"
+            width="100%"
+            height="auto"
+          />
+        </div>
+
+        <button class="arrow left" onclick="prevSlide()">&#10094;</button>
+        <button class="arrow right" onclick="nextSlide()">&#10095;</button>
+      </div>
+    </section>
+    <!-- MODAL IMAGE VIEW -->
+    <div id="modal" onclick="closeModal()">
+      <img id="modalImg" />
+    </div>
+
+    <!-- CTA -->
+    <section class="cta">
+      <h2>Love our work? Plan your event with us!</h2>
+      <button>
+        <a href="{{ url_for('signup') }}">Book Your Event</a>
+      </button>
+    </section>
+
+    <!-- Footer -->
+
+    <footer>
+      <div class="footer-col">
+        <h4 class="act"><i class="fa-solid fa-location-dot"></i> Address</h4>
+        <p>
+          <b>CMR College</b><br />
+          Medchal District<br />
+          Pin-code: 501401<br />
+          Telangana, India
+        </p>
+        <a href="https://maps.google.com" target="_blank" class="map-link">
+          Get Directions <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="footer-col end">
+        <h4 class="act">Explore</h4>
+        <ul class="footer-links">
+          <li><a href="{{ url_for('signup') }}">Our Services</a></li>
+          <li><a href="{{ url_for('public_gallery') }}">Event Gallery</a></li>
+          <li><a href="{{ url_for('public_about') }}">About Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col end">
+        <h4 class="act">Contact</h4>
+        <p><i class="fa-solid fa-phone"></i> 09343489432</p>
+        <p><i class="fa-brands fa-whatsapp"></i> +91 9999999999</p>
+        <p><i class="fa-solid fa-envelope"></i> info@eventnest.com</p>
+
+        <div class="legal-links">
+          <a href="#">Privacy Policy</a> | <a href="#">Terms</a>
+        </div>
+      </div>
+
+      <div class="footer-col" id="last">
+        <h4 class="act">Follow Us</h4>
+        <div class="social-icons">
+          <a href="https://www.facebook.com"
+            ><i class="fa-brands fa-facebook-f"></i
+          ></a>
+          <a href="https://www.linkedin.com"
+            ><i class="fa-brands fa-linkedin-in"></i
+          ></a>
+          <a href="https://www.github.com"
+            ><i class="fa-brands fa-github"></i
+          ></a>
+          <a href="https://www.instagram.com"
+            ><i class="fa-brands fa-instagram"></i
+          ></a>
+        </div>
+
+        <p class="copyright">
+          ©2035 by Event Nest. <br />
+          Powered and secured by FireWall
+        </p>
+
+        <button id="down">
+          <a href="{{ url_for('signup') }}" id="no">BOOK NOW</a>
+        </button>
+      </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/user/gallery_script.js') }}"></script>
+  </body>
+</html>

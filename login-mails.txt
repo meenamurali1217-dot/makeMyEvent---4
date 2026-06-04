@@ -1,0 +1,5 @@
+admin = meena.murali@gmail.com -> 1217@Mkvm
+
+vendor = vendor@gmail.com -> 1234
+
+user = user@gmail.com -> 1234

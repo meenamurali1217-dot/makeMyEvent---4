@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Messages | Vendor Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vendor/messages.css', v='1.3') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="navbar">
+        
+    <!-- Header -->
+        <div class="logo">
+          make
+          <img
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
+            alt=""
+            class="image"
+          />
+          event
+        </div>
+
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search messages...">
+    </div>
+
+    <nav class="desktop-nav">
+      <a href="{{ url_for('vendor_dashboard') }}" class="option">Dashboard</a>
+      <a href="{{ url_for('vendor_services') }}" class="option">My Services</a>
+      <a href="{{ url_for('vendor_earnings') }}" class="option">Earnings</a>
+      <a href="{{ url_for('vendor_messages') }}" class="option" style="color:#2196f3;">Messages</a>
+      <a href="{{ url_for('vendor_profile') }}" class="option">Profile</a>
+      <a href="{{ url_for('change_password') }}" class="option">Change Password</a>
+    </nav>
+    <!-- Notification Bell -->
+    <div class="icon-btn" onclick="toggleNotificationDropdown(event)" style="position: relative; margin-right: 15px; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 5px; color: inherit;">
+        🔔 <span style="font-weight: 500;">Notifications <span id="notification-badge" style="display: none; background: #ef4444; color: white; border-radius: 50%; padding: 1px 6px; font-size: 10px; font-weight: bold; margin-left: 2px;"></span></span>
+        
+        <!-- Notification Dropdown -->
+        <div id="notificationDropdown" class="user-dropdown" style="display: none; width: 320px; padding: 10px 0; right: 0; top: 40px; text-align: left; max-height: 400px; overflow: hidden; flex-direction: column; position: absolute; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000;">
+            <div style="padding: 5px 15px 10px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 14px; color: #1e293b;">Recent Alerts</span>
+                <span onclick="markVendorNotificationsAsRead(event)" style="font-size: 12px; color: #2196f3; cursor: pointer; font-weight: normal;">Mark all read</span>
+            </div>
+            <div id="notificationDropdownList" style="max-height: 280px; overflow-y: auto; padding: 5px 0;">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="auth">
+      <button class="register" style="background-color: #333;" onclick="location.href='/logout'"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
+
+  <main class="admin-container">
+      
+      <div class="admin-hero-enhanced">
+          <div class="hero-text">
+              <h1>Communication Hub</h1>
+              <p>Connect with your clients and get support from the admin team.</p>
+          </div>
+      </div>
+
+       <div class="chat-wrapper">
+          
+          <div class="chat-list-pane">
+              <div class="chat-search">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="contactSearch" placeholder="Search chats...">
+              </div>
+              
+              <div class="chat-tabs" style="display: none;">
+                  <button class="tab-btn active">All</button>
+                  <button class="tab-btn">Unread</button>
+                  <button class="tab-btn">Admin</button>
+              </div>
+
+              <div class="contacts-scroll" id="contactsList">
+                  <!-- Populated dynamically via JS -->
+              </div>
+          </div>
+
+          <div class="chat-window-pane" id="chatWindow" style="display: none;">
+              
+              <div class="chat-header">
+                  <div class="chat-partner-info">
+                      <img src="{{ url_for('static', filename='images/default_avatar.svg') }}" id="chatHeaderImg" alt="Active User">
+                      <div>
+                          <h3 id="chatHeaderName">Customer Name</h3>
+                          <span id="chatHeaderStatus" class="status-text online">Online</span>
+                      </div>
+                  </div>
+                  <div class="chat-actions" style="display: none;">
+                      <button class="icon-btn-plain"><i class="fa-solid fa-phone"></i></button>
+                      <button class="icon-btn-plain"><i class="fa-solid fa-video"></i></button>
+                      <button class="icon-btn-plain"><i class="fa-solid fa-circle-info"></i></button>
+                  </div>
+              </div>
+
+              <div class="chat-messages" id="chatMessages">
+                  <!-- Populated dynamically via JS -->
+              </div>
+
+              <div class="chat-input-area">
+                  <button class="attach-btn" style="display: none;"><i class="fa-solid fa-paperclip"></i></button>
+                  <input type="text" id="messageInput" placeholder="Type a message..." onkeypress="handleEnter(event)">
+                  <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+              </div>
+
+          </div>
+
+          <div class="chat-window-pane" id="noChatSelected" style="display: flex; align-items: center; justify-content: center; flex: 1; background: #fafafa; color: #888;">
+              <div style="text-align: center; padding: 40px;">
+                  <i class="fa-regular fa-comments" style="font-size: 48px; margin-bottom: 15px; color: #ccc;"></i>
+                  <h3>No Chat Selected</h3>
+                  <p>Choose a customer from the contact list to start messaging.</p>
+              </div>
+          </div>
+
+      </div>
+
+      </div>
+
+  </main>
+
+  <footer>
+        <div class="footer-col">
+            CMR college <br>  
+            Kandlakoya<br>
+            Medchel Telangana
+        </div>
+        <div class="footer-col end">
+            Tel: 08965436 <br>
+            Ph.no:91 8976564390<br>
+            info@eventnest.com
+        </div>
+        <div class="footer-col end">
+            ©2035 by EventNest. <br>
+            Powered and secured by FireWall
+        </div>
+        <div class="footer-col" id="last">
+            <div class="social-icons">
+                <a href="https://www.facebook.com"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://github.com"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.instagram.com"><i class="fa-brands fa-instagram"></i></a>
+            </div> 
+            <br>
+            <button id="down"><a href="{{ url_for('vendor_booking') }}" id="no">Bookings</a></button>
+        </div>
+    </footer>
+
+  <script src="{{ url_for('static', filename='js/vendor/messages.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/vendor/vendor_script.js') }}"></script>
+</body>
+</html>
