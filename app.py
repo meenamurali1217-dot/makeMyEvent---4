@@ -373,7 +373,7 @@ def signup():
                 (email,),
             )
             set_user_session(user)
-            flash("Registration successful!", "success")
+            # flash("Registration successful!", "success")
             return redirect(url_for("user_home"))
 
     return render_template("auth/signup.html")

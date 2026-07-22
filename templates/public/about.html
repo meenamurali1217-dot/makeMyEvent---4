@@ -1,377 +1,400 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
   <meta charset="UTF-8">
   <title>About Us | EventNest</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/user/about_style.css', v='1.5') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user/about_style.css', v='2.0') }}">
 </head>
 <body>
 
   <div class="head_and_hero">
-    <header class="navbar">
-        <div class="logo">
-          make
-          <img
-            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
-            alt=""
-            class="image"
-          />
-          event
-        </div>
+    {% include "partials/header_public.html" %}
 
-        <div class="search-box">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" placeholder="Search events or Services..." />
-        </div>
-
-        <nav>
-          <a href="{{ url_for('index') }}" class="option">Home</a>
-          <a href="{{ url_for('public_gallery') }}" class="option"
-            >Gallery</a
-          >
-          <a href="{{ url_for('public_about') }}" class="option"
-            >About</a
-          >
-        </nav>
-
-    
-        <div class="auth">
-          <a href="{{ url_for('signup') }}"
-            ><button class="login">
-              <img
-                src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjV6bMs6hvIDSG-IbeZq1OqdoH7lnUJKXFSODhERwf7D3M6fuuJRadljjktdpmvGblYCSpud5ZO-Bl8Bwl5_yeKhIRPAmq4LMLicA63dDh274-FGREPjE9fx321NisbWKQwHgCreijli80fBJtCntA13YtbDqTM3uQceATgq2xVuoqsKg3OzfEuNxv-aOM/s1600/Screenshot%202026-03-27%20122136%203.png"
-                alt=""
-                class="image2"
-              />
-              Login or create account
-            </button></a
-          >
-        </div>
-      </header>
-
-  <main class="content">
-    
-    <section class="hero">
-      <div class="hero-text">
-        <h1>About Event Nest</h1>
-        <p>Making every celebration memorable and stress-free.</p>
-      </div>
+    <main class="content">
       
-    </section>
-    </div>
+      <!-- HERO SECTION -->
+      <section class="hero-section">
+        <div class="hero-left">
+          <h4 class="hero-subtitle">ABOUT EVENT NEST</h4>
+          <h1 class="hero-title">We Create Moments You'll <span class="highlight-blue">Never Forget</span></h1>
+          <p class="hero-desc">
+            Event Nest turns your ideas into unforgettable experiences. From intimate gatherings to grand celebrations, we handle everything with creativity, precision and passion.
+          </p>
+          <div class="hero-buttons">
+            <a href="#" class="btn-primary">Explore Events <i class="fa-solid fa-arrow-right"></i></a>
+            <a href="#" class="btn-outline-white"><span class="icon-circle"><i class="fa-regular fa-envelope"></i></span> Contact Us</a>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="hero-image-container">
+            <img src="{{ url_for('static', filename='images/about_hero.png') }}" alt="Outdoor Event">
+            <!-- Floating Stats Cards -->
+            <div class="floating-stats-bar">
+              <div class="stat-card">
+                <div class="stat-icon-wrapper"><i class="fa-regular fa-calendar-check stat-icon"></i></div>
+                <div class="stat-info">
+                  <h3>500+</h3>
+                  <p>Events Completed</p>
+                </div>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-card">
+                <div class="stat-icon-wrapper"><i class="fa-solid fa-users stat-icon"></i></div>
+                <div class="stat-info">
+                  <h3>10K+</h3>
+                  <p>Happy Clients</p>
+                </div>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-card">
+                <div class="stat-icon-wrapper"><i class="fa-regular fa-star stat-icon"></i></div>
+                <div class="stat-info">
+                  <h3>100+</h3>
+                  <p>Trusted Vendors</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> <!-- Close head_and_hero -->
 
-    <section class="who" id="who-we-are">
-      <div class="who-text">
-        <h2>Who We Are</h2>
-        <p>
-          Founded with a passion for bringing people together, Event Nest has grown from a small local planning firm into a premier comprehensive event management platform. We believe that every milestone deserves to be celebrated perfectly.
-        </p>
-        <p style="margin-top: 15px;">
-          Whether you are planning an intimate gathering, a grand wedding, or a massive corporate summit, our team of dedicated experts will handle the logistics, design, and coordination. Our platform seamlessly connects clients with a curated network of top-tier vendors to ensure that every aspect of your event—from catering to decor to entertainment—is flawlessly executed. At Event Nest, we don't just plan events; we architect unforgettable experiences.
-        </p>
+    <!-- OUR JOURNEY SECTION -->
+    <section class="our-journey">
+      <div class="journey-left">
+        <img src="{{ url_for('static', filename='images/about_who_v2.png') }}" alt="Our Journey">
       </div>
-      <div class="who-img">
-        <img src="https://catholictt.org/wp-content/uploads/2018/08/who-are-we.jpg" alt="Who we are">
+      <div class="journey-right">
+        <h4 class="section-subtitle">OUR JOURNEY</h4>
+        <h2 class="section-title">Our Story,<br>Your Celebration</h2>
+        <p class="journey-desc">
+          Event Nest was founded with a simple belief - every moment deserves to be celebrated beautifully.<br><br>
+          Our journey is built on trust, creativity and the joy of making memories that last a lifetime.
+        </p>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+            <div class="timeline-content">
+              <h4>2021</h4>
+              <h5>Company Started</h5>
+              <p>A small team with big dreams</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+            <div class="timeline-content">
+              <h4>2022</h4>
+              <h5>500+ Events</h5>
+              <p>Reached our first milestone</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+            <div class="timeline-content">
+              <h4>2023</h4>
+              <h5>Expanded to 5 Cities</h5>
+              <p>More celebrations, more smiles</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"><i class="fa-solid fa-circle"></i></div>
+            <div class="timeline-content">
+              <h4>2024</h4>
+              <h5>10,000+ Happy Customers</h5>
+              <p>Grateful for your trust and love</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="mv">
-      <h2>Our Mission & Vision</h2>
-      <div class="mv-cards">
-        <div class="mv-card mission">
-          <h3>🎯 Our Mission</h3>
-          <ul>
-            <li>Simplify event planning</li>
-            <li>Connect users with reliable vendors</li>
-            <li>Deliver stress-free experiences</li>
+    <!-- CORE VALUES CARDS -->
+    <section class="core-values-section">
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="icon-wrapper"><i class="fa-solid fa-bullseye"></i></div>
+          <h3>Our Mission</h3>
+          <p>Simplify event planning and deliver stress-free experiences with creativity and perfection.</p>
+        </div>
+        <div class="value-card">
+          <div class="icon-wrapper"><i class="fa-regular fa-eye"></i></div>
+          <h3>Our Vision</h3>
+          <p>To be the most trusted event partner, known for creating exceptional celebrations worldwide.</p>
+        </div>
+        <div class="value-card">
+          <div class="icon-wrapper"><i class="fa-regular fa-heart"></i></div>
+          <h3>Our Values</h3>
+          <ul class="value-list">
+            <li><i class="fa-solid fa-circle-check"></i> Creativity</li>
+            <li><i class="fa-solid fa-circle-check"></i> Integrity</li>
+            <li><i class="fa-solid fa-circle-check"></i> Customer First</li>
+            <li><i class="fa-solid fa-circle-check"></i> Excellence</li>
           </ul>
         </div>
+        <div class="value-card">
+          <div class="icon-wrapper"><i class="fa-solid fa-shield-halved"></i></div>
+          <h3>Our Commitment</h3>
+          <p>We are committed to delivering flawless events that exceed expectations, every single time.</p>
+        </div>
+      </div>
+    </section>
 
-        <div class="mv-card vision">
-          <h3>👁️ Our Vision</h3>
-          <ul>
-            <li>Become a trusted event platform</li>
-            <li>Support all types of celebrations</li>
-            <li>Create joyful memories</li>
+    <!-- WHY CHOOSE US -->
+    <section class="why-choose-us">
+      <h2 class="section-center-title">Why Choose Us?</h2>
+      <div class="horizontal-features">
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-solid fa-pen-nib"></i></div>
+          <h4>Personalized<br>Planning</h4>
+          <p>We craft events that reflect your unique vision and style.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-regular fa-comments"></i></div>
+          <h4>Free<br>Consultation</h4>
+          <p>Get expert advice with no hidden obligations.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-solid fa-wallet"></i></div>
+          <h4>Budget<br>Friendly</h4>
+          <p>Transparent pricing that fits your style and budget.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <h4>Custom<br>Themes</h4>
+          <p>Stunning setups designed to match your dreams.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-solid fa-handshake-angle"></i></div>
+          <h4>Trusted<br>Vendors</h4>
+          <p>Partnered with the best professionals in the industry.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fa-regular fa-clock"></i></div>
+          <h4>On-Time<br>Execution</h4>
+          <p>Flawless management to ensure everything runs on schedule.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- OUR PLANNING PROCESS -->
+    <section class="planning-process">
+      <h2 class="section-center-title">Our Planning Process</h2>
+      <div class="process-steps">
+        <div class="step-item">
+          <div class="step-number">1</div>
+          <div class="step-icon"><i class="fa-regular fa-comments"></i></div>
+          <h4>Consultation</h4>
+          <p>We understand your needs and ideas.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-number">2</div>
+          <div class="step-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+          <h4>Planning</h4>
+          <p>Detailed planning and strategy creation.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-number">3</div>
+          <div class="step-icon"><i class="fa-solid fa-people-group"></i></div>
+          <h4>Vendor Selection</h4>
+          <p>We connect with the best vendors.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-number">4</div>
+          <div class="step-icon"><i class="fa-solid fa-spa"></i></div>
+          <h4>Decoration</h4>
+          <p>Creative design and setup begins.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-number">5</div>
+          <div class="step-icon"><i class="fa-solid fa-calendar-check"></i></div>
+          <h4>Execution</h4>
+          <p>We manage everything seamlessly.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-number">6</div>
+          <div class="step-icon"><i class="fa-solid fa-champagne-glasses"></i></div>
+          <h4>Celebrate</h4>
+          <p>Enjoy your event, we handle the rest.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS BANNER -->
+    <section class="dark-stats-banner">
+      <div class="stat-banner-item">
+        <i class="fa-regular fa-calendar-check"></i>
+        <div class="stat-banner-text">
+          <h2>500+</h2>
+          <p>Events Completed</p>
+        </div>
+      </div>
+      <div class="stat-banner-item">
+        <i class="fa-regular fa-face-smile"></i>
+        <div class="stat-banner-text">
+          <h2>95%</h2>
+          <p>Customer Satisfaction</p>
+        </div>
+      </div>
+      <div class="stat-banner-item">
+        <i class="fa-solid fa-users"></i>
+        <div class="stat-banner-text">
+          <h2>120+</h2>
+          <p>Trusted Vendors</p>
+        </div>
+      </div>
+      <div class="stat-banner-item">
+        <i class="fa-regular fa-star"></i>
+        <div class="stat-banner-text">
+          <h2>4.9 <i class="fa-solid fa-star"></i></h2>
+          <p>Google Rating</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAM & TESTIMONIALS -->
+    <section class="team-testimonials">
+      <div class="team-section">
+        <h2 class="section-title">Meet Our Team</h2>
+        <div class="team-grid">
+          <div class="team-card">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjI6wK2tGyTm0i11ZgMf0ulzThqJcCkU04W4dTbJAoZjWnBddFeDse1e9uZIcixevZwOmd4eeI5P3OoyRm881hBG645NMmQUFg_WsR5RSVB6lLtuvUrrxdjasu9csL-MVwrrCuSFD1lUmH96JbLWOnJQM7VM0r4uEnZSSzZ_6ARyxUMeqm73jLZBkDs98U/s320/667cdb94-29a8-4ac9-bc16-4284ebb03a1c.jpeg" alt="Meena">
+            <h4>Meena Kota</h4>
+            <p>Project Lead</p>
+            <div class="team-socials">
+              <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+              <a href="#"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+          </div>
+          <div class="team-card">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2SIm9Pnt6ttU7I7PcRGyW8ClDIVNKIGPiBGah-tfAHWZO2tSwNV4NWGBse2D7TMbCQ6qzyJTWxAFwuRN6NQ_w3emAl_heaYBCDiQatPuwUADIV6MQhKwrizsKSwri7xKpIm5GJxahe_cw4nEePEcz3-j_XcqO0rsepwIL2XS9xHrv_1_hJqvv4VAbyQI/s320/WhatsApp%20Image%202025-12-22%20at%2011.01.55%20AM.jpeg" alt="Vinay">
+            <h4>Vinay Kumar</h4>
+            <p>Lead Planner</p>
+            <div class="team-socials">
+              <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+              <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+          </div>
+          <div class="team-card">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhwjzuTB3i46o6wa2ZdhrHIgEoagC76t_sErd0af8C7L1esK90luoHDQmgoMseAYsttqQ_FIpda5etk9_nq0sJGnsSFeIkcOCeQhtU1_WAWPgPc2_JrhtamleAnn4AZC7o9K9GUlzXGSj3969Iphk8UVuOiEK06PQP8D1Hv3iFwL1YjgU7C7qsBvIr_IJU/s320/WhatsApp%20Image%202026-01-08%20at%209.24.51%20PM.jpeg" alt="Kalyani">
+            <h4>Kalyani</h4>
+            <p>Event Designer</p>
+            <div class="team-socials">
+              <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+              <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+          </div>
+          <div class="team-card">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhchiK872CQsRMrhwdbR26rIKqXw7nZUtdyO5JDU2CyIrs7DGwjKCBR9igF1hT5o9LCvUu6jMyhuEvfhZ3rzIUFCA_ysxXRD8lg_nphfprb1PuqX2c3Xek5uLFmjqDFvO-81QWE5g_bfmVdq0gdpTDaNiWa04D33HsqlF3JbW1Xj5Y1wm40ZfB_AQOKXK0/s320/WhatsApp%20Image%202025-12-22%20at%2011.56.50%20AM.jpeg" alt="Shanmukh">
+            <h4>Shanmukh</h4>
+            <p>Coordinator</p>
+            <div class="team-socials">
+              <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+              <a href="#"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="view-all-container">
+          <a href="#" class="btn-outline-blue">View All Team Members <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="testimonials-section">
+        <h2 class="section-title">What Our Clients Say</h2>
+        <div class="testimonial-cards-container">
+          <div class="testimonial-card">
+            <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+            <div class="rating-stars">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <p class="testimonial-text">"Event Nest made our wedding a dream come true. Everything was perfectly planned and executed!"</p>
+            <div class="client-info">
+              <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Priya Sharma">
+              <div>
+                <h4>Priya Sharma</h4>
+                <p>Hyderabad</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+            <div class="rating-stars">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <p class="testimonial-text">"Their team is super professional, creative and always available. Highly recommended!"</p>
+            <div class="client-info">
+              <img src="https://randomuser.me/api/portraits/men/11.jpg" alt="Rohit Varma">
+              <div>
+                <h4>Rohit Varma</h4>
+                <p>Hyderabad</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- A GLIMPSE OF OUR WORK -->
+    <section class="gallery-glimpse">
+      <h2 class="section-center-title">A Glimpse of Our Work</h2>
+      <div class="glimpse-images">
+        <img src="{{ url_for('static', filename='images/wedding.png') }}" alt="Wedding Event">
+        <img src="{{ url_for('static', filename='images/corporate.png') }}" alt="Corporate Event">
+        <img src="{{ url_for('static', filename='images/parties.png') }}" alt="Party Setup">
+        <img src="{{ url_for('static', filename='images/birthday.png') }}" alt="Birthday Event">
+        <img src="{{ url_for('static', filename='images/annivarsary.png') }}" alt="Anniversary Event">
+      </div>
+    </section>
+
+    <!-- GET IN TOUCH -->
+    <section class="contact-section">
+      <div class="contact-wrapper">
+        <div class="contact-info">
+          <h2>Get In Touch</h2>
+          <p>Let's plan something amazing together!</p>
+          <ul class="contact-details-list">
+            <li><div class="c-icon"><i class="fa-solid fa-phone"></i></div> <span>+91 98854 68432</span></li>
+            <li><div class="c-icon"><i class="fa-solid fa-envelope"></i></div> <span>info@eventnest.com</span></li>
+            <li>
+              <div class="c-icon"><i class="fa-solid fa-location-dot"></i></div> 
+              <span><b>Event Nest Headquarters</b><br>Level 4, CDC Complex, Kundan Bagh,<br>Madhapur, Hyderabad, Telangana 500081</span>
+            </li>
           </ul>
+          <a href="#" class="btn-primary" style="margin-top: 20px; display: inline-block;">Contact Us <i class="fa-solid fa-arrow-right"></i></a>
         </div>
-      </div>
-    </section>
-
-    <div class="why-choose">
-      <div class="why-choose-inner">
-        <h2>Why Choose Us</h2>
-        <div class="features-grid">
-          <div class="feature-card">
-            <img src="https://img.icons8.com/?size=100&id=119703&format=png&color=000000" alt="">
-            <h4>Personalized Event Planning</h4>
-            <p>We tailor every detail to your unique vision and style.</p>
-          </div>
-          <div class="feature-card">
-            <img src="https://img.icons8.com/?size=100&id=R1kC9AoaoQgQ&format=png&color=000000" alt="">
-            <h4>Free Expert Consultation</h4>
-            <p>Get professional advice with absolutely no obligations.</p>
-          </div>
-          <div class="feature-card">
-            <img src="https://img.icons8.com/?size=100&id=HNZ1FY24twH0&format=png&color=000000" alt="">
-            <h4>Budget-Friendly Packages</h4>
-            <p>Transparent pricing that fits exactly within your budget.</p>
-          </div>
-          <div class="feature-card">
-            <img src="https://img.icons8.com/?size=100&id=0Z2th4OTrTEb&format=png&color=000000" alt="">
-            <h4>Custom Themes & Decorations</h4>
-            <p>Stunning setups designed to match your event theme perfectly.</p>
-          </div>
-          <div class="feature-card">
-            <img src="https://img.icons8.com/?size=100&id=q0w1mrR0Iafp&format=png&color=FAB005" alt="">
-            <h4>Trusted Vendors</h4>
-            <p>Collaborating only with the best professionals in the industry.</p>
-          </div>
-          <div class="feature-card">
-            <img src="https://img.icons8.com/?size=100&id=119693&format=png&color=000000" alt="">
-            <h4>On-Time Execution</h4>
-            <p>Flawless management to ensure everything runs on schedule.</p>
-          </div>
+        
+        <div class="contact-map">
+          <!-- Placeholder map image -->
+          <img src="{{ url_for('static', filename='images/about_map.png') }}" alt="Map Location" style="width: 100%; height: 100%; object-fit: cover;">
+          <div class="map-marker"><i class="fa-solid fa-location-dot"></i></div>
         </div>
 
-        <div class="extra-benefits">
-          <h3>Extra Benefits for Booking With Us!</h3>
-          <div class="benefit-items">
-            <div class="benefit-item">
-              <div class="benefit-icon-wrapper">
-                <img src="https://img.icons8.com/?size=100&id=ooWxwd8jnXUw&format=png&color=000000" alt="">
-              </div>
-              <span>Free Event Offers</span>
-            </div>
-            <div class="benefit-item">
-              <div class="benefit-icon-wrapper">
-                <img src="https://img.icons8.com/?size=100&id=woMC0BA8mqBt&format=png&color=000000" alt="">
-              </div>
-              <span>24/7 Support</span>
-            </div>
-            <div class="benefit-item">
-              <div class="benefit-icon-wrapper">
-                <img src="https://img.icons8.com/?size=100&id=u-_QrjX9qIwV&format=png&color=000000" alt="">
-              </div>
-              <span>Flexible Payment</span>
-            </div>
-            <div class="benefit-item">
-              <div class="benefit-icon-wrapper">
-                <img src="https://img.icons8.com/?size=100&id=81288&format=png&color=000000" alt="">
-              </div>
-              <span>Free Theme Service</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <section class="team">
-      <h2>Meet The Team</h2>
-      <div class="team-cards">
-        <div class="member">
-          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjI6wK2tGyTm0i11ZgMf0ulzThqJcCkU04W4dTbJAoZjWnBddFeDse1e9uZIcixevZwOmd4eeI5P3OoyRm881hBG645NMmQUFg_WsR5RSVB6lLtuvUrrxdjasu9csL-MVwrrCuSFD1lUmH96JbLWOnJQM7VM0r4uEnZSSzZ_6ARyxUMeqm73jLZBkDs98U/s320/667cdb94-29a8-4ac9-bc16-4284ebb03a1c.jpeg" alt="Meena">
-          <h4>MEENA KOTA</h4>
-          <p>Project Lead</p>
-        </div>
-        <div class="member">
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2SIm9Pnt6ttU7I7PcRGyW8ClDIVNKIGPiBGah-tfAHWZO2tSwNV4NWGBse2D7TMbCQ6qzyJTWxAFwuRN6NQ_w3emAl_heaYBCDiQatPuwUADIV6MQhKwrizsKSwri7xKpIm5GJxahe_cw4nEePEcz3-j_XcqO0rsepwIL2XS9xHrv_1_hJqvv4VAbyQI/s320/WhatsApp%20Image%202025-12-22%20at%2011.01.55%20AM.jpeg" alt="Vinay">    
-          <h4>VINAY KUMAR</h4>
-          <p>Lead Planner</p>
-        </div>
-        <div class="member">
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhwjzuTB3i46o6wa2ZdhrHIgEoagC76t_sErd0af8C7L1esK90luoHDQmgoMseAYsttqQ_FIpda5etk9_nq0sJGnsSFeIkcOCeQhtU1_WAWPgPc2_JrhtamleAnn4AZC7o9K9GUlzXGSj3969Iphk8UVuOiEK06PQP8D1Hv3iFwL1YjgU7C7qsBvIr_IJU/s320/WhatsApp%20Image%202026-01-08%20at%209.24.51%20PM.jpeg" alt="Kalyani">    
-          <h4>KALYANI</h4>
-          <p>Event Designer</p>
-        </div>
-        <div class="member">
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhchiK872CQsRMrhwdbR26rIKqXw7nZUtdyO5JDU2CyIrs7DGwjKCBR9igF1hT5o9LCvUu6jMyhuEvfhZ3rzIUFCA_ysxXRD8lg_nphfprb1PuqX2c3Xek5uLFmjqDFvO-81QWE5g_bfmVdq0gdpTDaNiWa04D33HsqlF3JbW1Xj5Y1wm40ZfB_AQOKXK0/s320/WhatsApp%20Image%202025-12-22%20at%2011.56.50%20AM.jpeg" alt="Shanmukh"> 
-          <h4>SHANMUKH</h4>
-          <p>Coordinator</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Location Section -->
-    <section class="location">
-      <h2>Our Location</h2>
-      <div class="location-inner">
-        <div class="location-text">
-          <h3>Visit Our Office</h3>
-          <p>We'd love to meet you in person to discuss your upcoming event, walk through our design catalogs, and share a cup of coffee. Drop by our headquarters during standard business hours.</p>
-          <div class="address-details">
-            <div class="detail-item">
-              <i class="fa-solid fa-location-dot"></i>
-              <div class="detail-text">
-                <b>Event Nest Headquarters</b>
-                Level 4, CMR College Building<br>
-                Medchal District, 501401<br>
-                Telangana, India
-              </div>
-            </div>
-            <div class="detail-item">
-              <i class="fa-solid fa-clock"></i>
-              <div class="detail-text">
-                <b>Business Hours</b>
-                Monday - Friday<br>
-                9:00 AM - 6:00 PM
-              </div>
-            </div>
-          </div>
 
       </div>
     </section>
 
-    <section class="cta">
-      <div class="cta-inner">
-        <h2>Ready to plan your next event with us?</h2>
-        <button><a href="{{ url_for('signup') }}">Plan Your Event</a></button>
-      </div>
-    </section>
-
-    <!-- Custom Request Section -->
-    <section class="custom-request">
-      <div class="custom-request-inner">
-        <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Customer Request</h2>
-        <form class="request-form">
-          <div class="form-group">
-            <select class="form-control" id="eventType" required>
-              <option value="">Select Event Type</option>
-              <option value="wedding">Wedding</option>
-              <option value="birthday">Birthday</option>
-              <option value="anniversary">Anniversary</option>
-              <option value="babyshower">Baby Shower</option>
-              <option value="corporate">Corporate Event</option>
-              <option value="party">Party</option>
-              <option value="cultural">Cultural Event</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <input type="email" class="form-control" id="email" placeholder="Your Email Address" required>
-          </div>
-          <div class="form-group">
-            <input type="tel" class="form-control" id="phone" placeholder="Your Phone Number" required>
-          </div>
-          <div class="form-group">
-            <textarea class="form-control" id="requirements" placeholder="Tell us your specific requirements..." rows="6" required></textarea>
-          </div>
-          <button type="submit" class="submit-btn">Submit Inquiry</button>
-        </form>
-      </div>
-    </section>
-
-    <!-- Reviews Section -->
-    <section class="reviews-section">
-      <div class="reviews-inner">
-        <h2><i class="fa-solid fa-comments"></i> Reviews</h2>
-        <div class="reviews-grid">
-          <div class="review-card">
-            <p class="review-text">"Found the perfect DJ for my party within 5 minutes. Excellent service!"</p>
-            <div class="review-rating">
-              <span class="stars">★★★★★</span>
-              <span class="rating-value">5.0</span>
-            </div>
-          </div>
-          <div class="review-card">
-            <p class="review-text">"EventNest made my wedding planning so stress-free. Highly recommended!"</p>
-            <div class="review-rating">
-              <span class="stars">★★★★★</span>
-              <span class="rating-value">5.0</span>
-            </div>
-          </div>
-          <div class="review-card">
-            <p class="review-text">"Amazing vendors and professional coordination. My event was perfect!"</p>
-            <div class="review-rating">
-              <span class="stars">★★★★☆</span>
-              <span class="rating-value">4.5</span>
-            </div>
-          </div>
-          <div class="review-card">
-            <p class="review-text">"Great experience! The team was very supportive and responsive throughout."</p>
-            <div class="review-rating">
-              <span class="stars">★★★★★</span>
-              <span class="rating-value">5.0</span>
-            </div>
-          </div>
+    <!-- FOOTER CTA -->
+    <section class="footer-cta">
+      <div class="cta-content">
+        <div class="cta-text">
+          <h2>Ready to plan your next unforgettable event?</h2>
+          <p>Let's create memories that last a lifetime.</p>
         </div>
+        <a href="#" class="btn-white">Plan Your Event <i class="fa-solid fa-arrow-right"></i></a>
       </div>
     </section>
 
   </main>
 
-    <!-- Footer -->
-    <footer class="hidden">
-      <div class="footer-col">
-        <h4 class="act"><i class="fa-solid fa-location-dot"></i> Address</h4>
-        <p>
-          <b>CMR College</b><br />
-          Medchal District<br />
-          Pin-code: 501401<br />
-          Telangana, India
-        </p>
-        <a href="https://maps.google.com" target="_blank" class="map-link">
-          Get Directions <i class="fa-solid fa-arrow-right"></i>
-        </a>
-      </div>
-
-      <div class="footer-col end">
-        <h4 class="act">Explore</h4>
-        <ul class="footer-links">
-          <li>
-            <a href="{{ url_for('signup') }}"
-              >Our Services</a
-            >
-          </li>
-          <li>
-            <a href="{{ url_for('public_gallery') }}"
-              >Event Gallery</a
-            >
-          </li>
-          <li><a href="{{ url_for('public_about') }}">About Us</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col end">
-        <h4 class="act">Contact</h4>
-        <p><i class="fa-solid fa-phone"></i> 09343489432</p>
-        <p><i class="fa-brands fa-whatsapp"></i> +91 9999999999</p>
-        <p><i class="fa-solid fa-envelope"></i> info@eventnest.com</p>
-
-        <div class="legal-links">
-          <a href="#">Privacy Policy</a> | <a href="#">Terms</a>
-        </div>
-      </div>
-
-      <div class="footer-col" id="last">
-        <h4 class="act">Follow Us</h4>
-        <div class="social-icons">
-          <a href="https://www.facebook.com"
-            ><i class="fa-brands fa-facebook-f"></i
-          ></a>
-          <a href="https://www.linkedin.com"
-            ><i class="fa-brands fa-linkedin-in"></i
-          ></a>
-          <a href="https://www.github.com"
-            ><i class="fa-brands fa-github"></i
-          ></a>
-          <a href="https://www.instagram.com"
-            ><i class="fa-brands fa-instagram"></i
-          ></a>
-        </div>
-
-        <p class="copyright">
-          ©2035 by Event Nest. <br />
-          Powered and secured by FireWall
-        </p>
-
-        <button id="down">
-          <a href="{{ url_for('signup') }}" id="no">BOOK NOW</a>
-        </button>
-      </div>
-    </footer>
+  {% include "partials/footer_public.html" %}
+  </div>
 
   <script src="{{ url_for('static', filename='js/user/about_logic.js', v='1.5') }}"></script>
 </body>

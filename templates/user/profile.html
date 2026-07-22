@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Dashboard | EventNest</title>
@@ -11,66 +12,7 @@
 </head>
 <body>
 
-   <!-- Header -->
-   <header class="navbar">
-        <div class="logo">
-          make
-          <img
-            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
-            alt=""
-            class="image"
-          />
-          event
-        </div>
-
-        <div class="search-box">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" placeholder="Search events or Services..." />
-        </div>
-
-        <nav>
-          <a href="{{ url_for('user_home') }}" class="option">Home</a>
-          <a href="{{ url_for('user_services') }}" class="option">Services</a>
-          <a href="{{ url_for('user_gallery') }}" class="option">Gallery</a>          
-          <a href="{{ url_for('user_about') }}" class="option">About</a>
-          <a href="{{ url_for('user_messages') }}" class="option">Messages</a>
-        </nav>
-
-        <div class="icon-btn" onclick="openWishlistModal()">
-      ❤️
-      <span>Wishlist <span id="wishlist-count" style="display:none;"></span></span>
-    </div>
-    
-    <!-- Notification Bell -->
-    <div class="icon-btn" onclick="toggleNotificationDropdown(event)" style="position: relative; margin-right: 15px; cursor: pointer; user-select: none;">
-        🔔 <span style="font-weight: 500;">Notifications <span id="notification-badge" style="display: none; background: #ef4444; color: white; border-radius: 50%; padding: 1px 6px; font-size: 10px; font-weight: bold; margin-left: 2px;"></span></span>
-        
-        <!-- Notification Dropdown -->
-        <div id="notificationDropdown" class="user-dropdown" style="display: none; width: 320px; padding: 10px 0; right: 0; top: 40px; text-align: left; max-height: 400px; overflow: hidden; flex-direction: column;">
-            <div style="padding: 5px 15px 10px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 600; font-size: 14px; color: #1e293b;">Recent Alerts</span>
-                <span onclick="markNotificationsAsRead(event)" style="font-size: 12px; color: #2196f3; cursor: pointer; font-weight: normal;">Mark all read</span>
-            </div>
-            <div id="notificationDropdownList" style="max-height: 280px; overflow-y: auto; padding: 5px 0;">
-                <!-- Populated dynamically -->
-            </div>
-        </div>
-    </div>
-    
-  <!-- User Menu -->
-  <div class="user-menu">
-    <div class="user-btn" onclick="toggleUserMenu()">
-      <img src="{{ user.profile_image or url_for('static', filename='images/default_avatar.svg') }}" alt="User Avatar" class="avatar" />
-      <span>{{ user.username }}</span> &#9660;
-    </div>
-
-    <div id="userDropdown" class="user-dropdown">
-      <a href="{{ url_for('user_profile') }}"><p>👤 My Profile</p></a>
-      <a href="{{ url_for('change_password') }}"><p>🔑 Change Password</p></a>
-      <p onclick="logout()">⏻ Logout</p>
-    </div>
-  </div>
-   </header>
+   {% include "partials/header_user.html" %}
  
     <main class="dashboard-container">
         
@@ -145,56 +87,7 @@
     </main>
 
   <!-- Footer -->
-  <footer>
-    <div class="footer-col">
-        <h4 class="act"><i class="fa-solid fa-location-dot"></i> Address</h4>
-        <p>
-            <b>CMR College</b><br>  
-            Medchal District<br>
-            Pin-code: 501401<br>
-            Telangana, India
-        </p>
-        <a href="https://maps.google.com" target="_blank" class="map-link">
-            Get Directions <i class="fa-solid fa-arrow-right"></i>
-        </a>
-    </div>
-
-    <div class="footer-col end">
-        <h4 class="act">Explore</h4>
-        <ul class="footer-links">
-            <li><a href="{{ url_for('user_services') }}">Our Services</a></li>
-            <li><a href="{{ url_for('user_gallery') }}">Event Gallery</a></li>
-            <li><a href="{{ url_for('user_about') }}">About Us</a></li>
-        </ul>
-    </div>
-
-    <div class="footer-col end">
-        <h4 class="act">Contact</h4>
-        <p><i class="fa-solid fa-phone"></i> 09343489432</p>
-        <p><i class="fa-brands fa-whatsapp"></i> +91 9999999999</p>
-        <p><i class="fa-solid fa-envelope"></i> info@eventnest.com</p>
-        
-        <div class="legal-links">
-            <a href="#">Privacy Policy</a> | <a href="#">Terms</a>
-        </div>
-    </div>
-
-    <div class="footer-col" id="last">
-        <h4 class="act">Follow Us</h4>
-        <div class="social-icons">
-            <a href="https://www.facebook.com"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="https://www.linkedin.com"><i class="fa-brands fa-linkedin-in"></i></a>
-            <a href="https://www.github.com"><i class="fa-brands fa-github"></i></a>
-            <a href="https://www.instagram.com"><i class="fa-brands fa-instagram"></i></a>
-        </div>
-        
-        <p class="copyright">©2035 by Event Nest. <br> Powered and secured by FireWall</p>
-        
-        <button id="down">
-            <a href="{{ url_for('user_services') }}" id="no">BOOK NOW</a>
-        </button>
-    </div>
-  </footer>
+  {% include "partials/footer_user.html" %}
 
   <!-- EDIT PROFILE MODAL -->
   <div class="modal-overlay" id="editProfileOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">

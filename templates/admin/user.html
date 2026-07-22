@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
   <meta charset="UTF-8">
   <title>Manage Users | Admin Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,36 +10,7 @@
 </head>
 <body>
 
-  <header class="navbar">
-    
-    <!-- Header -->
-        <div class="logo">
-          make
-          <img
-            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidvekcxWaVkfJFq89IxgFYyrdwvk85jeyU-wZ1qDwYIyH3048fsmL_qB0su74UD_3Vk4Hz9rNBa0R2wh72H7rWTtHbdPZGxlXH5RKAe-NZx95eBnhkqeTkyZDyyw8mGRNyCIQ6nJUgyLNfRVpYY5BCtsWj1jjUa8H_T_th4s34RS1JjeBifNBnKuFh6Ww/s320/Screenshot%202026-03-27%20115604.png"
-            alt=""
-            class="image"
-          />
-          event
-        </div>
-        
-    <div class="search-box">
-      <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="userSearch" placeholder="Search user name, email or ID..." onkeyup="searchUserTable()">
-    </div>
-
-    <nav class="desktop-nav">
-      <a href="{{ url_for('admin_dashboard') }}" class="option">Dashboard</a>
-      <a href="{{ url_for('admin_vendors') }}" class="option">Vendors</a>
-      <a href="{{ url_for('admin_users') }}" class="option" style="color:#2196f3;">Users</a>
-      <a href="{{ url_for('admin_bookings') }}" class="option">Booking</a>
-      <a href="{{ url_for('change_password') }}" class="option">Change Password</a>
-    </nav>
-    
-    <div class="auth">
-      <button class="register" style="background-color: #333;" onclick="location.href='/logout'"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-    </div>
-  </header>
+  {% include "partials/header_admin.html" %}
 
   <main class="admin-container">
       
@@ -313,32 +285,7 @@
       </div>
   </div>
 
-  <footer>
-        <div class="footer-col">
-            CMR college <br>  
-            Kandlakoya<br>
-            Medchel Telangana
-        </div>
-        <div class="footer-col end">
-            Tel: 08965436 <br>
-            Ph.no:91 8976564390<br>
-            info@eventnest.com
-        </div>
-        <div class="footer-col end">
-            ©2035 by EventNest. <br>
-            Powered and secured by FireWall
-        </div>
-        <div class="footer-col" id="last">
-            <div class="social-icons">
-                <a href="https://www.facebook.com"><i class="fa-brands fa-facebook"></i></a>
-                <a href="https://www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a>
-                <a href="https://github.com"><i class="fa-brands fa-github"></i></a>
-                <a href="https://www.instagram.com"><i class="fa-brands fa-instagram"></i></a>
-            </div> 
-            <br>
-            <button id="down"><a href="{{ url_for('admin_bookings') }}" id="no">Bookings</a></button>
-        </div>
-    </footer>
+  {% include "partials/footer_admin.html" %}
 
   <script src="{{ url_for('static', filename='js/admin/user.js') }}"></script>
 </body>

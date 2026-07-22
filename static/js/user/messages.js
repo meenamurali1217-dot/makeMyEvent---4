@@ -82,10 +82,12 @@ function renderContacts() {
                 <div class="contact-info">
                     <div class="c-top">
                         <h4>${c.name}</h4>
-                        <small>${c.last_timestamp ? formatChatTime(c.last_timestamp) : ''}</small>
+                        <div class="c-meta">
+                            <small>${c.last_timestamp ? formatChatTime(c.last_timestamp) : ''}</small>
+                            ${unreadBadge}
+                        </div>
                     </div>
-                    <p class="${msgClass}">${c.last_message}</p>
-                    ${unreadBadge}
+                    <p class="${msgClass}">${c.last_message ? c.last_message : 'No messages yet'}</p>
                 </div>
             </div>
         `;
